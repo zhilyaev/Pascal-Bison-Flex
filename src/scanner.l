@@ -17,7 +17,7 @@
 %%
 "program"                   { SAVE_TOKEN_LOC; return T_PROGRAM; }
 "var"                       { SAVE_TOKEN_LOC; return T_VAR; }
-"integer"|"boolean"|"char"  { SAVE_TOKEN_LOC; yylval->type = Get_Type_From_OpIden(yytext); return T_STANDARD_TYPE; }
+"integer"|"boolean"|"char"|"character"|"real"  { SAVE_TOKEN_LOC; yylval->type = Get_Type_From_OpIden(yytext); return T_STANDARD_TYPE; }
 "procedure"                 { SAVE_TOKEN_LOC; return T_PROCEDURE; }
 "function"                  { SAVE_TOKEN_LOC; return T_FUNCTION; }
 "begin"                     { SAVE_TOKEN_LOC; return T_BEGIN; }
@@ -62,6 +62,6 @@
 [A-Za-z][A-Za-z0-9_]*       { SAVE_TOKEN_LOC; yylval->opiden=strdup(yytext); return T_IDENTIFIER; }
 [ \t]+                      /* eat all whitespaces */;
 [\n]                        { yylloc->first_line = yylloc->last_line = yylineno; yylloc->first_column = 1; yylloc->last_column = 0; }
-.                           { SAVE_TOKEN_LOC; fprintf (stderr, "Syntax Error: unexpected character '%s' at line %d\n", yytext, yylloc->first_line); }
+.                           { SAVE_TOKEN_LOC; fprintf (stderr, "Oops -> '%s' at line %d\n", yytext, yylloc->first_line); }
 
 %%

@@ -34,7 +34,7 @@
 
 %%
 
-program : T_PROGRAM id T_OPAREN T_INPUT T_COMMA T_OUTPUT T_CPAREN T_SEMICOLON
+program : T_PROGRAM id T_SEMICOLON
 		declarations
 		subprogram_declarations
 		compound_statement

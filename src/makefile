@@ -6,12 +6,13 @@ CC=gcc
 CFLAGS=-O3 -w
 LIBS=
 PARSER=parser
+exe=../build/
 SCANNER=scanner
 OBJS=$(SCANNER).o $(PARSER).o Structures.o Code_Gen.o
-MYPASCALCOMPEXEC=mypascalcomp
+MYPASCALCOMPEXEC=mt
 
 all: $(OBJS)
-	$(CC) $(LIBS) $(OBJS) -o $(MYPASCALCOMPEXEC)
+	$(CC) $(LIBS) $(OBJS) -o $(exe)$(MYPASCALCOMPEXEC)
 
 Structures.o: Structures.c Structures.h
 	$(CC) $(CFLAGS) Structures.c -c
@@ -32,4 +33,4 @@ $(PARSER).h: $(PARSER).y
 	$(BISON) $(BISONFLAGS) $(PARSER).y -o $(PARSER).c
 
 clean:
-	rm -rf $(SCANNER).c $(PARSER).c $(PARSER).h *.o $(MYPASCALCOMPEXEC)
+	rm -rf $(SCANNER).c $(PARSER).c $(PARSER).h $(PARSER).output *.o $(MYPASCALCOMPEXEC)

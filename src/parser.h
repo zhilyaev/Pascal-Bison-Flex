@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,11 +30,11 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_Y_TAB_H_INCLUDED
-# define YY_YY_Y_TAB_H_INCLUDED
+#ifndef YY_YY_PARSER_H_INCLUDED
+# define YY_YY_PARSER_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -57,98 +57,60 @@ extern int yydebug;
     T_MINUS = 267,
     T_MUL = 268,
     T_DIV = 269,
-    T_NOT = 270,
-    T_PROGRAM = 271,
-    T_VAR = 272,
-    T_PROCEDURE = 273,
-    T_FUNCTION = 274,
-    T_BEGIN = 275,
-    T_END = 276,
-    T_IF = 277,
-    T_THEN = 278,
-    T_ELSE = 279,
-    T_WHILE = 280,
-    T_FOR = 281,
-    T_TO = 282,
-    T_DO = 283,
-    T_ASSIGNMENT = 284,
-    T_OBRACKET = 285,
-    T_CBRACKET = 286,
-    T_SEMICOLON = 287,
-    T_COLON = 288,
-    T_COMMA = 289,
-    T_DOT = 290,
-    T_PRINT_INT = 291,
-    T_PRINT_CHAR = 292,
-    T_PRINT_BOOL = 293,
-    T_PRINT_LINE = 294,
-    TYPE_IDENTIFIER = 295,
-    IDENTIFIER = 296,
-    T_INT = 297,
-    T_BOOL = 298,
-    T_CHAR = 299
+    T_MOD = 270,
+    T_NOT = 271,
+    T_PROGRAM = 272,
+    T_VAR = 273,
+    T_PROCEDURE = 274,
+    T_FUNCTION = 275,
+    T_BEGIN = 276,
+    T_END = 277,
+    T_IF = 278,
+    T_THEN = 279,
+    T_ELSE = 280,
+    T_WHILE = 281,
+    T_FOR = 282,
+    T_TO = 283,
+    T_DO = 284,
+    T_ASSIGNOP = 285,
+    T_OBRACKET = 286,
+    T_CBRACKET = 287,
+    T_SEMICOLON = 288,
+    T_COLON = 289,
+    T_COMMA = 290,
+    T_DOT = 291,
+    T_WRITE_INT = 292,
+    T_WRITE_CHAR = 293,
+    T_WRITE_BOOL = 294,
+    T_WRITE_LN = 295,
+    T_STANDARD_TYPE = 296,
+    T_IDENTIFIER = 297,
+    T_INT = 298,
+    T_BOOL = 299,
+    T_CHAR = 300,
+    T_REAL = 301
   };
 #endif
-/* Tokens.  */
-#define T_OR 258
-#define T_AND 259
-#define T_CEQ 260
-#define T_CNE 261
-#define T_CLT 262
-#define T_CGT 263
-#define T_CLE 264
-#define T_CGE 265
-#define T_PLUS 266
-#define T_MINUS 267
-#define T_MUL 268
-#define T_DIV 269
-#define T_NOT 270
-#define T_PROGRAM 271
-#define T_VAR 272
-#define T_PROCEDURE 273
-#define T_FUNCTION 274
-#define T_BEGIN 275
-#define T_END 276
-#define T_IF 277
-#define T_THEN 278
-#define T_ELSE 279
-#define T_WHILE 280
-#define T_FOR 281
-#define T_TO 282
-#define T_DO 283
-#define T_ASSIGNMENT 284
-#define T_OBRACKET 285
-#define T_CBRACKET 286
-#define T_SEMICOLON 287
-#define T_COLON 288
-#define T_COMMA 289
-#define T_DOT 290
-#define T_PRINT_INT 291
-#define T_PRINT_CHAR 292
-#define T_PRINT_BOOL 293
-#define T_PRINT_LINE 294
-#define TYPE_IDENTIFIER 295
-#define IDENTIFIER 296
-#define T_INT 297
-#define T_BOOL 298
-#define T_CHAR 299
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE YYSTYPE;
+
 union YYSTYPE
 {
-#line 34 "parser.y" /* yacc.c:1909  */
+#line 24 "parser.y" /* yacc.c:1909  */
 
     char* opiden;
     int integer;
     int boolean;
     char character;
+	double real;
     int type;
-    struct Node *node;
+    struct Nodes *node;
 
-#line 151 "y.tab.h" /* yacc.c:1909  */
+#line 111 "parser.h" /* yacc.c:1909  */
 };
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -171,4 +133,4 @@ struct YYLTYPE
 
 int yyparse (void);
 
-#endif /* !YY_YY_Y_TAB_H_INCLUDED  */
+#endif /* !YY_YY_PARSER_H_INCLUDED  */
