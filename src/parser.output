@@ -5,9 +5,11 @@ Terminals unused in grammar
 
 
 State 3 conflicts: 4 reduce/reduce
-State 126 conflicts: 1 reduce/reduce
-State 134 conflicts: 1 shift/reduce
-State 155 conflicts: 1 reduce/reduce
+State 45 conflicts: 1 shift/reduce
+State 46 conflicts: 1 shift/reduce
+State 129 conflicts: 1 reduce/reduce
+State 137 conflicts: 2 shift/reduce
+State 157 conflicts: 1 reduce/reduce
 
 
 Grammar
@@ -16,7 +18,7 @@ Grammar
 
     1 program: program_decl declarations subprogram_declarations compound_statement
 
-    2 program_decl: T_PROGRAM identifier T_SEMICOLON
+    2 program_decl: T_PROGRAM identifier MB_SEMILICON
 
     3 declarations: multi_var_decl
     4             | %empty
@@ -42,9 +44,9 @@ Grammar
    16 subprogram_decl: procedure_decl
    17                | function_decl
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
    20 arg_list: arg multi_arg
    21         | %empty
@@ -63,143 +65,146 @@ Grammar
    29 optional_statements: statement multi_statement
    30                    | %empty
 
-   31 multi_statement: T_SEMICOLON statement multi_statement
+   31 multi_statement: statement multi_statement
    32                | %empty
 
-   33 statement: matched_statement
-   34          | unmatched_statement
+   33 statement: matched_statement MB_SEMILICON
+   34          | unmatched_statement MB_SEMILICON
 
-   35 matched_statement: assignop
-   36                  | matched_if
-   37                  | while
-   38                  | for
-   39                  | call
-   40                  | write_statement
+   35 MB_SEMILICON: T_SEMICOLON
+   36             | %empty
 
-   41 unmatched_statement: if
-   42                    | T_IF expression T_THEN matched_statement T_ELSE unmatched_statement
+   37 matched_statement: assignop
+   38                  | matched_if
+   39                  | while
+   40                  | for
+   41                  | call
+   42                  | write_statement
 
-   43 if: T_IF expression T_THEN statements
+   43 unmatched_statement: if
+   44                    | T_IF expression T_THEN matched_statement T_ELSE unmatched_statement
 
-   44 matched_if: T_IF expression T_THEN matched_statement T_ELSE matched_statement
+   45 if: T_IF expression T_THEN statements
 
-   45 write_statement: write_int
-   46                | write_char
-   47                | write_bool
-   48                | write_ln
+   46 matched_if: T_IF expression T_THEN matched_statement T_ELSE matched_statement
 
-   49 write_int: T_WRITE_INT T_OBRACKET expression T_CBRACKET
+   47 write_statement: write_int
+   48                | write_char
+   49                | write_bool
+   50                | write_ln
 
-   50 write_char: T_WRITE_CHAR T_OBRACKET expression T_CBRACKET
+   51 write_int: T_WRITE_INT T_OBRACKET expression T_CBRACKET
 
-   51 write_bool: T_WRITE_BOOL T_OBRACKET expression T_CBRACKET
+   52 write_char: T_WRITE_CHAR T_OBRACKET expression T_CBRACKET
 
-   52 write_ln: T_WRITE_LN T_OBRACKET T_CBRACKET
+   53 write_bool: T_WRITE_BOOL T_OBRACKET expression T_CBRACKET
 
-   53 assignop: identifier T_ASSIGNOP expression
+   54 write_ln: T_WRITE_LN T_OBRACKET T_CBRACKET
 
-   54 while: T_WHILE expression T_DO statements
+   55 assignop: identifier T_ASSIGNOP expression
 
-   55 for: T_FOR assignop T_TO expression T_DO statements
+   56 while: T_WHILE expression T_DO statements
 
-   56 expression: simple_expression
-   57           | simple_expression rel_op simple_expression
+   57 for: T_FOR assignop T_TO expression T_DO statements
 
-   58 simple_expression: term
-   59                  | simple_expression add_op term
+   58 expression: simple_expression
+   59           | simple_expression rel_op simple_expression
 
-   60 term: not_element
-   61     | term mul_op not_element
+   60 simple_expression: term
+   61                  | simple_expression add_op term
 
-   62 not_element: element
-   63            | not_op element
+   62 term: not_element
+   63     | term mul_op not_element
 
-   64 element: identifier
-   65        | standard_type
-   66        | call
-   67        | T_OBRACKET expression T_CBRACKET
+   64 not_element: element
+   65            | not_op element
 
-   68 call: identifier T_OBRACKET call_arg_list T_CBRACKET
+   66 element: identifier
+   67        | standard_type
+   68        | call
+   69        | T_OBRACKET expression T_CBRACKET
 
-   69 call_arg_list: %empty
-   70              | call_arg call_multi_arg
+   70 call: identifier T_OBRACKET call_arg_list T_CBRACKET
 
-   71 call_multi_arg: %empty
-   72               | T_COMMA call_arg call_multi_arg
+   71 call_arg_list: %empty
+   72              | call_arg call_multi_arg
 
-   73 call_arg: expression
+   73 call_multi_arg: %empty
+   74               | T_COMMA call_arg call_multi_arg
 
-   74 add_op: T_PLUS
-   75       | T_MINUS
-   76       | T_OR
+   75 call_arg: expression
 
-   77 mul_op: T_MUL
-   78       | T_DIV
-   79       | T_AND
+   76 add_op: T_PLUS
+   77       | T_MINUS
+   78       | T_OR
 
-   80 rel_op: T_CLT
-   81       | T_CLE
-   82       | T_CGT
-   83       | T_CGE
-   84       | T_CEQ
-   85       | T_CNE
+   79 mul_op: T_MUL
+   80       | T_DIV
+   81       | T_AND
 
-   86 not_op: T_NOT
+   82 rel_op: T_CLT
+   83       | T_CLE
+   84       | T_CGT
+   85       | T_CGE
+   86       | T_CEQ
+   87       | T_CNE
 
-   87 identifier: T_IDENTIFIER
+   88 not_op: T_NOT
 
-   88 standard_type: T_INT
-   89              | T_BOOL
-   90              | T_CHAR
+   89 identifier: T_IDENTIFIER
+
+   90 standard_type: T_INT
+   91              | T_BOOL
+   92              | T_CHAR
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-T_OR (258) 76
-T_AND (259) 79
-T_CEQ (260) 84
-T_CNE (261) 85
-T_CLT (262) 80
-T_CGT (263) 82
-T_CLE (264) 81
-T_CGE (265) 83
-T_PLUS (266) 74
-T_MINUS (267) 75
-T_MUL (268) 77
-T_DIV (269) 78
+T_OR (258) 78
+T_AND (259) 81
+T_CEQ (260) 86
+T_CNE (261) 87
+T_CLT (262) 82
+T_CGT (263) 84
+T_CLE (264) 83
+T_CGE (265) 85
+T_PLUS (266) 76
+T_MINUS (267) 77
+T_MUL (268) 79
+T_DIV (269) 80
 T_MOD (270)
-T_NOT (271) 86
+T_NOT (271) 88
 T_PROGRAM (272) 2
 T_VAR (273) 7
 T_PROCEDURE (274) 18
 T_FUNCTION (275) 19
 T_BEGIN (276) 18 19 25 28
 T_END (277) 18 19 25 28
-T_IF (278) 42 43 44
-T_THEN (279) 42 43 44
-T_ELSE (280) 42 44
-T_WHILE (281) 54
-T_FOR (282) 55
-T_TO (283) 55
-T_DO (284) 54 55
-T_ASSIGNOP (285) 53
-T_OBRACKET (286) 18 19 49 50 51 52 67 68
-T_CBRACKET (287) 18 19 49 50 51 52 67 68
-T_SEMICOLON (288) 2 7 18 19 31
+T_IF (278) 44 45 46
+T_THEN (279) 44 45 46
+T_ELSE (280) 44 46
+T_WHILE (281) 56
+T_FOR (282) 57
+T_TO (283) 57
+T_DO (284) 56 57
+T_ASSIGNOP (285) 55
+T_OBRACKET (286) 18 19 51 52 53 54 69 70
+T_CBRACKET (287) 18 19 51 52 53 54 69 70
+T_SEMICOLON (288) 7 18 19 35
 T_COLON (289) 7 19 24
-T_COMMA (290) 9 22 72
+T_COMMA (290) 9 22 74
 T_DOT (291) 25
-T_WRITE_INT (292) 49
-T_WRITE_CHAR (293) 50
-T_WRITE_BOOL (294) 51
-T_WRITE_LN (295) 52
+T_WRITE_INT (292) 51
+T_WRITE_CHAR (293) 52
+T_WRITE_BOOL (294) 53
+T_WRITE_LN (295) 54
 T_STANDARD_TYPE (296) 7 19 24
-T_IDENTIFIER (297) 87
-T_INT (298) 88
-T_BOOL (299) 89
-T_CHAR (300) 90
+T_IDENTIFIER (297) 89
+T_INT (298) 90
+T_BOOL (299) 91
+T_CHAR (300) 92
 T_REAL (301)
 
 
@@ -242,67 +247,69 @@ arg (63)
 compound_statement (64)
     on left: 25 26, on right: 1
 statements (65)
-    on left: 27 28, on right: 43 54 55
+    on left: 27 28, on right: 45 56 57
 optional_statements (66)
     on left: 29 30, on right: 18 19 25 28
 multi_statement (67)
     on left: 31 32, on right: 29 31
 statement (68)
     on left: 33 34, on right: 27 29 31
-matched_statement (69)
-    on left: 35 36 37 38 39 40, on right: 33 42 44
-unmatched_statement (70)
-    on left: 41 42, on right: 34 42
-if (71)
-    on left: 43, on right: 41
-matched_if (72)
-    on left: 44, on right: 36
-write_statement (73)
-    on left: 45 46 47 48, on right: 40
-write_int (74)
-    on left: 49, on right: 45
-write_char (75)
-    on left: 50, on right: 46
-write_bool (76)
+MB_SEMILICON (69)
+    on left: 35 36, on right: 2 18 19 33 34
+matched_statement (70)
+    on left: 37 38 39 40 41 42, on right: 33 44 46
+unmatched_statement (71)
+    on left: 43 44, on right: 34 44
+if (72)
+    on left: 45, on right: 43
+matched_if (73)
+    on left: 46, on right: 38
+write_statement (74)
+    on left: 47 48 49 50, on right: 42
+write_int (75)
     on left: 51, on right: 47
-write_ln (77)
+write_char (76)
     on left: 52, on right: 48
-assignop (78)
-    on left: 53, on right: 35 55
-while (79)
-    on left: 54, on right: 37
-for (80)
-    on left: 55, on right: 38
-expression (81)
-    on left: 56 57, on right: 42 43 44 49 50 51 53 54 55 67 73
-simple_expression (82)
-    on left: 58 59, on right: 56 57 59
-term (83)
+write_bool (77)
+    on left: 53, on right: 49
+write_ln (78)
+    on left: 54, on right: 50
+assignop (79)
+    on left: 55, on right: 37 57
+while (80)
+    on left: 56, on right: 39
+for (81)
+    on left: 57, on right: 40
+expression (82)
+    on left: 58 59, on right: 44 45 46 51 52 53 55 56 57 69 75
+simple_expression (83)
     on left: 60 61, on right: 58 59 61
-not_element (84)
-    on left: 62 63, on right: 60 61
-element (85)
-    on left: 64 65 66 67, on right: 62 63
-call (86)
-    on left: 68, on right: 39 66
-call_arg_list (87)
-    on left: 69 70, on right: 68
-call_multi_arg (88)
-    on left: 71 72, on right: 70 72
-call_arg (89)
-    on left: 73, on right: 70 72
-add_op (90)
-    on left: 74 75 76, on right: 59
-mul_op (91)
-    on left: 77 78 79, on right: 61
-rel_op (92)
-    on left: 80 81 82 83 84 85, on right: 57
-not_op (93)
-    on left: 86, on right: 63
-identifier (94)
-    on left: 87, on right: 2 11 18 19 24 53 64 68
-standard_type (95)
-    on left: 88 89 90, on right: 65
+term (84)
+    on left: 62 63, on right: 60 61 63
+not_element (85)
+    on left: 64 65, on right: 62 63
+element (86)
+    on left: 66 67 68 69, on right: 64 65
+call (87)
+    on left: 70, on right: 41 68
+call_arg_list (88)
+    on left: 71 72, on right: 70
+call_multi_arg (89)
+    on left: 73 74, on right: 72 74
+call_arg (90)
+    on left: 75, on right: 72 74
+add_op (91)
+    on left: 76 77 78, on right: 61
+mul_op (92)
+    on left: 79 80 81, on right: 63
+rel_op (93)
+    on left: 82 83 84 85 86 87, on right: 59
+not_op (94)
+    on left: 88, on right: 65
+identifier (95)
+    on left: 89, on right: 2 11 18 19 24 55 66 70
+standard_type (96)
+    on left: 90 91 92, on right: 67
 
 
 State 0
@@ -317,7 +324,7 @@ State 0
 
 State 1
 
-    2 program_decl: T_PROGRAM . identifier T_SEMICOLON
+    2 program_decl: T_PROGRAM . identifier MB_SEMILICON
 
     T_IDENTIFIER  shift, and go to state 4
 
@@ -354,16 +361,20 @@ State 3
 
 State 4
 
-   87 identifier: T_IDENTIFIER .
+   89 identifier: T_IDENTIFIER .
 
-    $default  reduce using rule 87 (identifier)
+    $default  reduce using rule 89 (identifier)
 
 
 State 5
 
-    2 program_decl: T_PROGRAM identifier . T_SEMICOLON
+    2 program_decl: T_PROGRAM identifier . MB_SEMILICON
 
     T_SEMICOLON  shift, and go to state 11
+
+    $default  reduce using rule 36 (MB_SEMILICON)
+
+    MB_SEMILICON  go to state 12
 
 
 State 6
@@ -379,24 +390,24 @@ State 7
 
     T_IDENTIFIER  shift, and go to state 4
 
-    list_id     go to state 12
-    id          go to state 13
-    identifier  go to state 14
+    list_id     go to state 13
+    id          go to state 14
+    identifier  go to state 15
 
 
 State 8
 
     1 program: program_decl declarations . subprogram_declarations compound_statement
 
-    T_PROCEDURE  shift, and go to state 15
-    T_FUNCTION   shift, and go to state 16
+    T_PROCEDURE  shift, and go to state 16
+    T_FUNCTION   shift, and go to state 17
 
     $default  reduce using rule 13 (subprogram_declarations)
 
-    subprogram_declarations  go to state 17
-    subprogram_decl          go to state 18
-    procedure_decl           go to state 19
-    function_decl            go to state 20
+    subprogram_declarations  go to state 18
+    subprogram_decl          go to state 19
+    procedure_decl           go to state 20
+    function_decl            go to state 21
 
 
 State 9
@@ -414,54 +425,52 @@ State 10
 
     $default  reduce using rule 6 (multi_var_decl)
 
-    multi_var_decl  go to state 21
+    multi_var_decl  go to state 22
     var_decl        go to state 10
 
 
 State 11
 
-    2 program_decl: T_PROGRAM identifier T_SEMICOLON .
+   35 MB_SEMILICON: T_SEMICOLON .
 
-    $default  reduce using rule 2 (program_decl)
+    $default  reduce using rule 35 (MB_SEMILICON)
 
 
 State 12
 
-    7 var_decl: T_VAR list_id . T_COLON T_STANDARD_TYPE T_SEMICOLON
+    2 program_decl: T_PROGRAM identifier MB_SEMILICON .
 
-    T_COLON  shift, and go to state 22
+    $default  reduce using rule 2 (program_decl)
 
 
 State 13
 
-    8 list_id: id . multi_id
+    7 var_decl: T_VAR list_id . T_COLON T_STANDARD_TYPE T_SEMICOLON
 
-    T_COMMA  shift, and go to state 23
-
-    $default  reduce using rule 10 (multi_id)
-
-    multi_id  go to state 24
+    T_COLON  shift, and go to state 23
 
 
 State 14
+
+    8 list_id: id . multi_id
+
+    T_COMMA  shift, and go to state 24
+
+    $default  reduce using rule 10 (multi_id)
+
+    multi_id  go to state 25
+
+
+State 15
 
    11 id: identifier .
 
     $default  reduce using rule 11 (id)
 
 
-State 15
-
-   18 procedure_decl: T_PROCEDURE . identifier T_OBRACKET arg_list T_CBRACKET T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
-
-    T_IDENTIFIER  shift, and go to state 4
-
-    identifier  go to state 25
-
-
 State 16
 
-   19 function_decl: T_FUNCTION . identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE . identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_IDENTIFIER  shift, and go to state 4
 
@@ -470,728 +479,739 @@ State 16
 
 State 17
 
-    1 program: program_decl declarations subprogram_declarations . compound_statement
+   19 function_decl: T_FUNCTION . identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
-    T_BEGIN  shift, and go to state 27
+    T_IDENTIFIER  shift, and go to state 4
 
-    $default  reduce using rule 26 (compound_statement)
-
-    compound_statement  go to state 28
+    identifier  go to state 27
 
 
 State 18
 
-   12 subprogram_declarations: subprogram_decl . multi_subprogram_decl
+    1 program: program_decl declarations subprogram_declarations . compound_statement
 
-    T_PROCEDURE  shift, and go to state 15
-    T_FUNCTION   shift, and go to state 16
+    T_BEGIN  shift, and go to state 28
 
-    $default  reduce using rule 15 (multi_subprogram_decl)
+    $default  reduce using rule 26 (compound_statement)
 
-    multi_subprogram_decl  go to state 29
-    subprogram_decl        go to state 30
-    procedure_decl         go to state 19
-    function_decl          go to state 20
+    compound_statement  go to state 29
 
 
 State 19
+
+   12 subprogram_declarations: subprogram_decl . multi_subprogram_decl
+
+    T_PROCEDURE  shift, and go to state 16
+    T_FUNCTION   shift, and go to state 17
+
+    $default  reduce using rule 15 (multi_subprogram_decl)
+
+    multi_subprogram_decl  go to state 30
+    subprogram_decl        go to state 31
+    procedure_decl         go to state 20
+    function_decl          go to state 21
+
+
+State 20
 
    16 subprogram_decl: procedure_decl .
 
     $default  reduce using rule 16 (subprogram_decl)
 
 
-State 20
+State 21
 
    17 subprogram_decl: function_decl .
 
     $default  reduce using rule 17 (subprogram_decl)
 
 
-State 21
+State 22
 
     5 multi_var_decl: var_decl multi_var_decl .
 
     $default  reduce using rule 5 (multi_var_decl)
 
 
-State 22
+State 23
 
     7 var_decl: T_VAR list_id T_COLON . T_STANDARD_TYPE T_SEMICOLON
 
-    T_STANDARD_TYPE  shift, and go to state 31
+    T_STANDARD_TYPE  shift, and go to state 32
 
 
-State 23
+State 24
 
     9 multi_id: T_COMMA . id multi_id
 
     T_IDENTIFIER  shift, and go to state 4
 
-    id          go to state 32
-    identifier  go to state 14
+    id          go to state 33
+    identifier  go to state 15
 
 
-State 24
+State 25
 
     8 list_id: id multi_id .
 
     $default  reduce using rule 8 (list_id)
 
 
-State 25
-
-   18 procedure_decl: T_PROCEDURE identifier . T_OBRACKET arg_list T_CBRACKET T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
-
-    T_OBRACKET  shift, and go to state 33
-
-
 State 26
 
-   19 function_decl: T_FUNCTION identifier . T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier . T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_OBRACKET  shift, and go to state 34
 
 
 State 27
 
+   19 function_decl: T_FUNCTION identifier . T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+
+    T_OBRACKET  shift, and go to state 35
+
+
+State 28
+
    25 compound_statement: T_BEGIN . optional_statements T_END T_DOT
 
-    T_IF          shift, and go to state 35
-    T_WHILE       shift, and go to state 36
-    T_FOR         shift, and go to state 37
-    T_WRITE_INT   shift, and go to state 38
-    T_WRITE_CHAR  shift, and go to state 39
-    T_WRITE_BOOL  shift, and go to state 40
-    T_WRITE_LN    shift, and go to state 41
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
     T_IDENTIFIER  shift, and go to state 4
 
     $default  reduce using rule 30 (optional_statements)
 
-    optional_statements  go to state 42
-    statement            go to state 43
-    matched_statement    go to state 44
-    unmatched_statement  go to state 45
-    if                   go to state 46
-    matched_if           go to state 47
-    write_statement      go to state 48
-    write_int            go to state 49
-    write_char           go to state 50
-    write_bool           go to state 51
-    write_ln             go to state 52
-    assignop             go to state 53
-    while                go to state 54
-    for                  go to state 55
-    call                 go to state 56
-    identifier           go to state 57
+    optional_statements  go to state 43
+    statement            go to state 44
+    matched_statement    go to state 45
+    unmatched_statement  go to state 46
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
 
 
-State 28
+State 29
 
     1 program: program_decl declarations subprogram_declarations compound_statement .
 
     $default  reduce using rule 1 (program)
 
 
-State 29
+State 30
 
    12 subprogram_declarations: subprogram_decl multi_subprogram_decl .
 
     $default  reduce using rule 12 (subprogram_declarations)
 
 
-State 30
+State 31
 
    14 multi_subprogram_decl: subprogram_decl . multi_subprogram_decl
 
-    T_PROCEDURE  shift, and go to state 15
-    T_FUNCTION   shift, and go to state 16
+    T_PROCEDURE  shift, and go to state 16
+    T_FUNCTION   shift, and go to state 17
 
     $default  reduce using rule 15 (multi_subprogram_decl)
 
-    multi_subprogram_decl  go to state 58
-    subprogram_decl        go to state 30
-    procedure_decl         go to state 19
-    function_decl          go to state 20
-
-
-State 31
-
-    7 var_decl: T_VAR list_id T_COLON T_STANDARD_TYPE . T_SEMICOLON
-
-    T_SEMICOLON  shift, and go to state 59
+    multi_subprogram_decl  go to state 59
+    subprogram_decl        go to state 31
+    procedure_decl         go to state 20
+    function_decl          go to state 21
 
 
 State 32
 
-    9 multi_id: T_COMMA id . multi_id
+    7 var_decl: T_VAR list_id T_COLON T_STANDARD_TYPE . T_SEMICOLON
 
-    T_COMMA  shift, and go to state 23
-
-    $default  reduce using rule 10 (multi_id)
-
-    multi_id  go to state 60
+    T_SEMICOLON  shift, and go to state 60
 
 
 State 33
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET . arg_list T_CBRACKET T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+    9 multi_id: T_COMMA id . multi_id
 
-    T_IDENTIFIER  shift, and go to state 4
+    T_COMMA  shift, and go to state 24
 
-    $default  reduce using rule 21 (arg_list)
+    $default  reduce using rule 10 (multi_id)
 
-    arg_list    go to state 61
-    arg         go to state 62
-    identifier  go to state 63
+    multi_id  go to state 61
 
 
 State 34
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET . arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET . arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_IDENTIFIER  shift, and go to state 4
 
     $default  reduce using rule 21 (arg_list)
 
-    arg_list    go to state 64
-    arg         go to state 62
-    identifier  go to state 63
+    arg_list    go to state 62
+    arg         go to state 63
+    identifier  go to state 64
 
 
 State 35
 
-   42 unmatched_statement: T_IF . expression T_THEN matched_statement T_ELSE unmatched_statement
-   43 if: T_IF . expression T_THEN statements
-   44 matched_if: T_IF . expression T_THEN matched_statement T_ELSE matched_statement
+   19 function_decl: T_FUNCTION identifier T_OBRACKET . arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
     T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
 
-    expression         go to state 70
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    $default  reduce using rule 21 (arg_list)
+
+    arg_list    go to state 65
+    arg         go to state 63
+    identifier  go to state 64
 
 
 State 36
 
-   54 while: T_WHILE . expression T_DO statements
+   44 unmatched_statement: T_IF . expression T_THEN matched_statement T_ELSE unmatched_statement
+   45 if: T_IF . expression T_THEN statements
+   46 matched_if: T_IF . expression T_THEN matched_statement T_ELSE matched_statement
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
     T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
 
-    expression         go to state 79
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    expression         go to state 71
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
 
 
 State 37
 
-   55 for: T_FOR . assignop T_TO expression T_DO statements
+   56 while: T_WHILE . expression T_DO statements
 
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
     T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
 
-    assignop    go to state 80
-    identifier  go to state 81
+    expression         go to state 80
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
 
 
 State 38
 
-   49 write_int: T_WRITE_INT . T_OBRACKET expression T_CBRACKET
+   57 for: T_FOR . assignop T_TO expression T_DO statements
 
-    T_OBRACKET  shift, and go to state 82
+    T_IDENTIFIER  shift, and go to state 4
+
+    assignop    go to state 81
+    identifier  go to state 82
 
 
 State 39
 
-   50 write_char: T_WRITE_CHAR . T_OBRACKET expression T_CBRACKET
+   51 write_int: T_WRITE_INT . T_OBRACKET expression T_CBRACKET
 
     T_OBRACKET  shift, and go to state 83
 
 
 State 40
 
-   51 write_bool: T_WRITE_BOOL . T_OBRACKET expression T_CBRACKET
+   52 write_char: T_WRITE_CHAR . T_OBRACKET expression T_CBRACKET
 
     T_OBRACKET  shift, and go to state 84
 
 
 State 41
 
-   52 write_ln: T_WRITE_LN . T_OBRACKET T_CBRACKET
+   53 write_bool: T_WRITE_BOOL . T_OBRACKET expression T_CBRACKET
 
     T_OBRACKET  shift, and go to state 85
 
 
 State 42
 
-   25 compound_statement: T_BEGIN optional_statements . T_END T_DOT
+   54 write_ln: T_WRITE_LN . T_OBRACKET T_CBRACKET
 
-    T_END  shift, and go to state 86
+    T_OBRACKET  shift, and go to state 86
 
 
 State 43
 
-   29 optional_statements: statement . multi_statement
+   25 compound_statement: T_BEGIN optional_statements . T_END T_DOT
 
-    T_SEMICOLON  shift, and go to state 87
-
-    $default  reduce using rule 32 (multi_statement)
-
-    multi_statement  go to state 88
+    T_END  shift, and go to state 87
 
 
 State 44
 
-   33 statement: matched_statement .
+   29 optional_statements: statement . multi_statement
 
-    $default  reduce using rule 33 (statement)
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
+    T_IDENTIFIER  shift, and go to state 4
+
+    $default  reduce using rule 32 (multi_statement)
+
+    multi_statement      go to state 88
+    statement            go to state 89
+    matched_statement    go to state 45
+    unmatched_statement  go to state 46
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
 
 
 State 45
 
-   34 statement: unmatched_statement .
+   33 statement: matched_statement . MB_SEMILICON
 
-    $default  reduce using rule 34 (statement)
+    T_SEMICOLON  shift, and go to state 11
+
+    T_SEMICOLON  [reduce using rule 36 (MB_SEMILICON)]
+    $default     reduce using rule 36 (MB_SEMILICON)
+
+    MB_SEMILICON  go to state 90
 
 
 State 46
 
-   41 unmatched_statement: if .
+   34 statement: unmatched_statement . MB_SEMILICON
 
-    $default  reduce using rule 41 (unmatched_statement)
+    T_SEMICOLON  shift, and go to state 11
+
+    T_SEMICOLON  [reduce using rule 36 (MB_SEMILICON)]
+    $default     reduce using rule 36 (MB_SEMILICON)
+
+    MB_SEMILICON  go to state 91
 
 
 State 47
 
-   36 matched_statement: matched_if .
+   43 unmatched_statement: if .
 
-    $default  reduce using rule 36 (matched_statement)
+    $default  reduce using rule 43 (unmatched_statement)
 
 
 State 48
 
-   40 matched_statement: write_statement .
+   38 matched_statement: matched_if .
 
-    $default  reduce using rule 40 (matched_statement)
+    $default  reduce using rule 38 (matched_statement)
 
 
 State 49
 
-   45 write_statement: write_int .
+   42 matched_statement: write_statement .
 
-    $default  reduce using rule 45 (write_statement)
+    $default  reduce using rule 42 (matched_statement)
 
 
 State 50
 
-   46 write_statement: write_char .
-
-    $default  reduce using rule 46 (write_statement)
-
-
-State 51
-
-   47 write_statement: write_bool .
+   47 write_statement: write_int .
 
     $default  reduce using rule 47 (write_statement)
 
 
-State 52
+State 51
 
-   48 write_statement: write_ln .
+   48 write_statement: write_char .
 
     $default  reduce using rule 48 (write_statement)
 
 
+State 52
+
+   49 write_statement: write_bool .
+
+    $default  reduce using rule 49 (write_statement)
+
+
 State 53
 
-   35 matched_statement: assignop .
+   50 write_statement: write_ln .
 
-    $default  reduce using rule 35 (matched_statement)
+    $default  reduce using rule 50 (write_statement)
 
 
 State 54
 
-   37 matched_statement: while .
+   37 matched_statement: assignop .
 
     $default  reduce using rule 37 (matched_statement)
 
 
 State 55
 
-   38 matched_statement: for .
-
-    $default  reduce using rule 38 (matched_statement)
-
-
-State 56
-
-   39 matched_statement: call .
+   39 matched_statement: while .
 
     $default  reduce using rule 39 (matched_statement)
 
 
+State 56
+
+   40 matched_statement: for .
+
+    $default  reduce using rule 40 (matched_statement)
+
+
 State 57
 
-   53 assignop: identifier . T_ASSIGNOP expression
-   68 call: identifier . T_OBRACKET call_arg_list T_CBRACKET
+   41 matched_statement: call .
 
-    T_ASSIGNOP  shift, and go to state 89
-    T_OBRACKET  shift, and go to state 90
+    $default  reduce using rule 41 (matched_statement)
 
 
 State 58
+
+   55 assignop: identifier . T_ASSIGNOP expression
+   70 call: identifier . T_OBRACKET call_arg_list T_CBRACKET
+
+    T_ASSIGNOP  shift, and go to state 92
+    T_OBRACKET  shift, and go to state 93
+
+
+State 59
 
    14 multi_subprogram_decl: subprogram_decl multi_subprogram_decl .
 
     $default  reduce using rule 14 (multi_subprogram_decl)
 
 
-State 59
+State 60
 
     7 var_decl: T_VAR list_id T_COLON T_STANDARD_TYPE T_SEMICOLON .
 
     $default  reduce using rule 7 (var_decl)
 
 
-State 60
+State 61
 
     9 multi_id: T_COMMA id multi_id .
 
     $default  reduce using rule 9 (multi_id)
 
 
-State 61
-
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list . T_CBRACKET T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
-
-    T_CBRACKET  shift, and go to state 91
-
-
 State 62
 
-   20 arg_list: arg . multi_arg
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list . T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
-    T_COMMA  shift, and go to state 92
-
-    $default  reduce using rule 23 (multi_arg)
-
-    multi_arg  go to state 93
+    T_CBRACKET  shift, and go to state 94
 
 
 State 63
 
-   24 arg: identifier . T_COLON T_STANDARD_TYPE
+   20 arg_list: arg . multi_arg
 
-    T_COLON  shift, and go to state 94
+    T_COMMA  shift, and go to state 95
+
+    $default  reduce using rule 23 (multi_arg)
+
+    multi_arg  go to state 96
 
 
 State 64
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list . T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   24 arg: identifier . T_COLON T_STANDARD_TYPE
 
-    T_CBRACKET  shift, and go to state 95
+    T_COLON  shift, and go to state 97
 
 
 State 65
 
-   86 not_op: T_NOT .
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list . T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
-    $default  reduce using rule 86 (not_op)
+    T_CBRACKET  shift, and go to state 98
 
 
 State 66
 
-   67 element: T_OBRACKET . expression T_CBRACKET
+   88 not_op: T_NOT .
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
-    T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
-
-    expression         go to state 96
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    $default  reduce using rule 88 (not_op)
 
 
 State 67
 
-   88 standard_type: T_INT .
+   69 element: T_OBRACKET . expression T_CBRACKET
 
-    $default  reduce using rule 88 (standard_type)
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
+    T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
+
+    expression         go to state 99
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
 
 
 State 68
 
-   89 standard_type: T_BOOL .
-
-    $default  reduce using rule 89 (standard_type)
-
-
-State 69
-
-   90 standard_type: T_CHAR .
+   90 standard_type: T_INT .
 
     $default  reduce using rule 90 (standard_type)
 
 
+State 69
+
+   91 standard_type: T_BOOL .
+
+    $default  reduce using rule 91 (standard_type)
+
+
 State 70
 
-   42 unmatched_statement: T_IF expression . T_THEN matched_statement T_ELSE unmatched_statement
-   43 if: T_IF expression . T_THEN statements
-   44 matched_if: T_IF expression . T_THEN matched_statement T_ELSE matched_statement
+   92 standard_type: T_CHAR .
 
-    T_THEN  shift, and go to state 97
+    $default  reduce using rule 92 (standard_type)
 
 
 State 71
 
-   56 expression: simple_expression .
-   57           | simple_expression . rel_op simple_expression
-   59 simple_expression: simple_expression . add_op term
+   44 unmatched_statement: T_IF expression . T_THEN matched_statement T_ELSE unmatched_statement
+   45 if: T_IF expression . T_THEN statements
+   46 matched_if: T_IF expression . T_THEN matched_statement T_ELSE matched_statement
 
-    T_OR     shift, and go to state 98
-    T_CEQ    shift, and go to state 99
-    T_CNE    shift, and go to state 100
-    T_CLT    shift, and go to state 101
-    T_CGT    shift, and go to state 102
-    T_CLE    shift, and go to state 103
-    T_CGE    shift, and go to state 104
-    T_PLUS   shift, and go to state 105
-    T_MINUS  shift, and go to state 106
-
-    $default  reduce using rule 56 (expression)
-
-    add_op  go to state 107
-    rel_op  go to state 108
+    T_THEN  shift, and go to state 100
 
 
 State 72
 
-   58 simple_expression: term .
-   61 term: term . mul_op not_element
+   58 expression: simple_expression .
+   59           | simple_expression . rel_op simple_expression
+   61 simple_expression: simple_expression . add_op term
 
-    T_AND  shift, and go to state 109
-    T_MUL  shift, and go to state 110
-    T_DIV  shift, and go to state 111
+    T_OR     shift, and go to state 101
+    T_CEQ    shift, and go to state 102
+    T_CNE    shift, and go to state 103
+    T_CLT    shift, and go to state 104
+    T_CGT    shift, and go to state 105
+    T_CLE    shift, and go to state 106
+    T_CGE    shift, and go to state 107
+    T_PLUS   shift, and go to state 108
+    T_MINUS  shift, and go to state 109
 
-    $default  reduce using rule 58 (simple_expression)
+    $default  reduce using rule 58 (expression)
 
-    mul_op  go to state 112
+    add_op  go to state 110
+    rel_op  go to state 111
 
 
 State 73
 
-   60 term: not_element .
+   60 simple_expression: term .
+   63 term: term . mul_op not_element
 
-    $default  reduce using rule 60 (term)
+    T_AND  shift, and go to state 112
+    T_MUL  shift, and go to state 113
+    T_DIV  shift, and go to state 114
+
+    $default  reduce using rule 60 (simple_expression)
+
+    mul_op  go to state 115
 
 
 State 74
 
-   62 not_element: element .
+   62 term: not_element .
 
-    $default  reduce using rule 62 (not_element)
+    $default  reduce using rule 62 (term)
 
 
 State 75
 
-   66 element: call .
+   64 not_element: element .
 
-    $default  reduce using rule 66 (element)
+    $default  reduce using rule 64 (not_element)
 
 
 State 76
 
-   63 not_element: not_op . element
+   68 element: call .
 
-    T_OBRACKET    shift, and go to state 66
-    T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
-
-    element        go to state 113
-    call           go to state 75
-    identifier     go to state 77
-    standard_type  go to state 78
+    $default  reduce using rule 68 (element)
 
 
 State 77
 
-   64 element: identifier .
-   68 call: identifier . T_OBRACKET call_arg_list T_CBRACKET
+   65 not_element: not_op . element
 
-    T_OBRACKET  shift, and go to state 90
+    T_OBRACKET    shift, and go to state 67
+    T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
 
-    $default  reduce using rule 64 (element)
+    element        go to state 116
+    call           go to state 76
+    identifier     go to state 78
+    standard_type  go to state 79
 
 
 State 78
 
-   65 element: standard_type .
+   66 element: identifier .
+   70 call: identifier . T_OBRACKET call_arg_list T_CBRACKET
 
-    $default  reduce using rule 65 (element)
+    T_OBRACKET  shift, and go to state 93
+
+    $default  reduce using rule 66 (element)
 
 
 State 79
 
-   54 while: T_WHILE expression . T_DO statements
+   67 element: standard_type .
 
-    T_DO  shift, and go to state 114
+    $default  reduce using rule 67 (element)
 
 
 State 80
 
-   55 for: T_FOR assignop . T_TO expression T_DO statements
+   56 while: T_WHILE expression . T_DO statements
 
-    T_TO  shift, and go to state 115
+    T_DO  shift, and go to state 117
 
 
 State 81
 
-   53 assignop: identifier . T_ASSIGNOP expression
+   57 for: T_FOR assignop . T_TO expression T_DO statements
 
-    T_ASSIGNOP  shift, and go to state 89
+    T_TO  shift, and go to state 118
 
 
 State 82
 
-   49 write_int: T_WRITE_INT T_OBRACKET . expression T_CBRACKET
+   55 assignop: identifier . T_ASSIGNOP expression
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
-    T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
-
-    expression         go to state 116
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    T_ASSIGNOP  shift, and go to state 92
 
 
 State 83
 
-   50 write_char: T_WRITE_CHAR T_OBRACKET . expression T_CBRACKET
+   51 write_int: T_WRITE_INT T_OBRACKET . expression T_CBRACKET
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
     T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
 
-    expression         go to state 117
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    expression         go to state 119
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
 
 
 State 84
 
-   51 write_bool: T_WRITE_BOOL T_OBRACKET . expression T_CBRACKET
+   52 write_char: T_WRITE_CHAR T_OBRACKET . expression T_CBRACKET
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
     T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
 
-    expression         go to state 118
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    expression         go to state 120
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
 
 
 State 85
 
-   52 write_ln: T_WRITE_LN T_OBRACKET . T_CBRACKET
+   53 write_bool: T_WRITE_BOOL T_OBRACKET . expression T_CBRACKET
 
-    T_CBRACKET  shift, and go to state 119
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
+    T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
+
+    expression         go to state 121
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
 
 
 State 86
 
-   25 compound_statement: T_BEGIN optional_statements T_END . T_DOT
+   54 write_ln: T_WRITE_LN T_OBRACKET . T_CBRACKET
 
-    T_DOT  shift, and go to state 120
+    T_CBRACKET  shift, and go to state 122
 
 
 State 87
 
-   31 multi_statement: T_SEMICOLON . statement multi_statement
+   25 compound_statement: T_BEGIN optional_statements T_END . T_DOT
 
-    T_IF          shift, and go to state 35
-    T_WHILE       shift, and go to state 36
-    T_FOR         shift, and go to state 37
-    T_WRITE_INT   shift, and go to state 38
-    T_WRITE_CHAR  shift, and go to state 39
-    T_WRITE_BOOL  shift, and go to state 40
-    T_WRITE_LN    shift, and go to state 41
-    T_IDENTIFIER  shift, and go to state 4
-
-    statement            go to state 121
-    matched_statement    go to state 44
-    unmatched_statement  go to state 45
-    if                   go to state 46
-    matched_if           go to state 47
-    write_statement      go to state 48
-    write_int            go to state 49
-    write_char           go to state 50
-    write_bool           go to state 51
-    write_ln             go to state 52
-    assignop             go to state 53
-    while                go to state 54
-    for                  go to state 55
-    call                 go to state 56
-    identifier           go to state 57
+    T_DOT  shift, and go to state 123
 
 
 State 88
@@ -1203,417 +1223,464 @@ State 88
 
 State 89
 
-   53 assignop: identifier T_ASSIGNOP . expression
+   31 multi_statement: statement . multi_statement
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
     T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
 
-    expression         go to state 122
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    $default  reduce using rule 32 (multi_statement)
+
+    multi_statement      go to state 124
+    statement            go to state 89
+    matched_statement    go to state 45
+    unmatched_statement  go to state 46
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
 
 
 State 90
 
-   68 call: identifier T_OBRACKET . call_arg_list T_CBRACKET
+   33 statement: matched_statement MB_SEMILICON .
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
-    T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
-
-    $default  reduce using rule 69 (call_arg_list)
-
-    expression         go to state 123
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    call_arg_list      go to state 124
-    call_arg           go to state 125
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    $default  reduce using rule 33 (statement)
 
 
 State 91
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET . T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   34 statement: unmatched_statement MB_SEMILICON .
 
-    T_SEMICOLON  shift, and go to state 126
+    $default  reduce using rule 34 (statement)
 
 
 State 92
+
+   55 assignop: identifier T_ASSIGNOP . expression
+
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
+    T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
+
+    expression         go to state 125
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
+
+
+State 93
+
+   70 call: identifier T_OBRACKET . call_arg_list T_CBRACKET
+
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
+    T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
+
+    $default  reduce using rule 71 (call_arg_list)
+
+    expression         go to state 126
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    call_arg_list      go to state 127
+    call_arg           go to state 128
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
+
+
+State 94
+
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET . MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 11
+
+    $default  reduce using rule 36 (MB_SEMILICON)
+
+    MB_SEMILICON  go to state 129
+
+
+State 95
 
    22 multi_arg: T_COMMA . arg multi_arg
 
     T_IDENTIFIER  shift, and go to state 4
 
-    arg         go to state 127
-    identifier  go to state 63
+    arg         go to state 130
+    identifier  go to state 64
 
 
-State 93
+State 96
 
    20 arg_list: arg multi_arg .
 
     $default  reduce using rule 20 (arg_list)
 
 
-State 94
+State 97
 
    24 arg: identifier T_COLON . T_STANDARD_TYPE
 
-    T_STANDARD_TYPE  shift, and go to state 128
-
-
-State 95
-
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET . T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
-
-    T_COLON  shift, and go to state 129
-
-
-State 96
-
-   67 element: T_OBRACKET expression . T_CBRACKET
-
-    T_CBRACKET  shift, and go to state 130
-
-
-State 97
-
-   42 unmatched_statement: T_IF expression T_THEN . matched_statement T_ELSE unmatched_statement
-   43 if: T_IF expression T_THEN . statements
-   44 matched_if: T_IF expression T_THEN . matched_statement T_ELSE matched_statement
-
-    T_BEGIN       shift, and go to state 131
-    T_IF          shift, and go to state 35
-    T_WHILE       shift, and go to state 36
-    T_FOR         shift, and go to state 37
-    T_WRITE_INT   shift, and go to state 38
-    T_WRITE_CHAR  shift, and go to state 39
-    T_WRITE_BOOL  shift, and go to state 40
-    T_WRITE_LN    shift, and go to state 41
-    T_IDENTIFIER  shift, and go to state 4
-
-    statements           go to state 132
-    statement            go to state 133
-    matched_statement    go to state 134
-    unmatched_statement  go to state 45
-    if                   go to state 46
-    matched_if           go to state 47
-    write_statement      go to state 48
-    write_int            go to state 49
-    write_char           go to state 50
-    write_bool           go to state 51
-    write_ln             go to state 52
-    assignop             go to state 53
-    while                go to state 54
-    for                  go to state 55
-    call                 go to state 56
-    identifier           go to state 57
+    T_STANDARD_TYPE  shift, and go to state 131
 
 
 State 98
 
-   76 add_op: T_OR .
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET . T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
-    $default  reduce using rule 76 (add_op)
+    T_COLON  shift, and go to state 132
 
 
 State 99
 
-   84 rel_op: T_CEQ .
+   69 element: T_OBRACKET expression . T_CBRACKET
 
-    $default  reduce using rule 84 (rel_op)
+    T_CBRACKET  shift, and go to state 133
 
 
 State 100
 
-   85 rel_op: T_CNE .
+   44 unmatched_statement: T_IF expression T_THEN . matched_statement T_ELSE unmatched_statement
+   45 if: T_IF expression T_THEN . statements
+   46 matched_if: T_IF expression T_THEN . matched_statement T_ELSE matched_statement
 
-    $default  reduce using rule 85 (rel_op)
+    T_BEGIN       shift, and go to state 134
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
+    T_IDENTIFIER  shift, and go to state 4
+
+    statements           go to state 135
+    statement            go to state 136
+    matched_statement    go to state 137
+    unmatched_statement  go to state 46
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
 
 
 State 101
 
-   80 rel_op: T_CLT .
+   78 add_op: T_OR .
 
-    $default  reduce using rule 80 (rel_op)
+    $default  reduce using rule 78 (add_op)
 
 
 State 102
 
-   82 rel_op: T_CGT .
+   86 rel_op: T_CEQ .
 
-    $default  reduce using rule 82 (rel_op)
+    $default  reduce using rule 86 (rel_op)
 
 
 State 103
 
-   81 rel_op: T_CLE .
+   87 rel_op: T_CNE .
 
-    $default  reduce using rule 81 (rel_op)
+    $default  reduce using rule 87 (rel_op)
 
 
 State 104
 
-   83 rel_op: T_CGE .
+   82 rel_op: T_CLT .
 
-    $default  reduce using rule 83 (rel_op)
+    $default  reduce using rule 82 (rel_op)
 
 
 State 105
 
-   74 add_op: T_PLUS .
+   84 rel_op: T_CGT .
 
-    $default  reduce using rule 74 (add_op)
+    $default  reduce using rule 84 (rel_op)
 
 
 State 106
 
-   75 add_op: T_MINUS .
+   83 rel_op: T_CLE .
 
-    $default  reduce using rule 75 (add_op)
+    $default  reduce using rule 83 (rel_op)
 
 
 State 107
 
-   59 simple_expression: simple_expression add_op . term
+   85 rel_op: T_CGE .
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
-    T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
-
-    term           go to state 135
-    not_element    go to state 73
-    element        go to state 74
-    call           go to state 75
-    not_op         go to state 76
-    identifier     go to state 77
-    standard_type  go to state 78
+    $default  reduce using rule 85 (rel_op)
 
 
 State 108
 
-   57 expression: simple_expression rel_op . simple_expression
+   76 add_op: T_PLUS .
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
-    T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
-
-    simple_expression  go to state 136
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    $default  reduce using rule 76 (add_op)
 
 
 State 109
 
-   79 mul_op: T_AND .
+   77 add_op: T_MINUS .
 
-    $default  reduce using rule 79 (mul_op)
+    $default  reduce using rule 77 (add_op)
 
 
 State 110
 
-   77 mul_op: T_MUL .
+   61 simple_expression: simple_expression add_op . term
 
-    $default  reduce using rule 77 (mul_op)
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
+    T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
+
+    term           go to state 138
+    not_element    go to state 74
+    element        go to state 75
+    call           go to state 76
+    not_op         go to state 77
+    identifier     go to state 78
+    standard_type  go to state 79
 
 
 State 111
 
-   78 mul_op: T_DIV .
+   59 expression: simple_expression rel_op . simple_expression
 
-    $default  reduce using rule 78 (mul_op)
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
+    T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
+
+    simple_expression  go to state 139
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
 
 
 State 112
 
-   61 term: term mul_op . not_element
+   81 mul_op: T_AND .
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
-    T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
-
-    not_element    go to state 137
-    element        go to state 74
-    call           go to state 75
-    not_op         go to state 76
-    identifier     go to state 77
-    standard_type  go to state 78
+    $default  reduce using rule 81 (mul_op)
 
 
 State 113
 
-   63 not_element: not_op element .
+   79 mul_op: T_MUL .
 
-    $default  reduce using rule 63 (not_element)
+    $default  reduce using rule 79 (mul_op)
 
 
 State 114
 
-   54 while: T_WHILE expression T_DO . statements
+   80 mul_op: T_DIV .
 
-    T_BEGIN       shift, and go to state 131
-    T_IF          shift, and go to state 35
-    T_WHILE       shift, and go to state 36
-    T_FOR         shift, and go to state 37
-    T_WRITE_INT   shift, and go to state 38
-    T_WRITE_CHAR  shift, and go to state 39
-    T_WRITE_BOOL  shift, and go to state 40
-    T_WRITE_LN    shift, and go to state 41
-    T_IDENTIFIER  shift, and go to state 4
-
-    statements           go to state 138
-    statement            go to state 133
-    matched_statement    go to state 44
-    unmatched_statement  go to state 45
-    if                   go to state 46
-    matched_if           go to state 47
-    write_statement      go to state 48
-    write_int            go to state 49
-    write_char           go to state 50
-    write_bool           go to state 51
-    write_ln             go to state 52
-    assignop             go to state 53
-    while                go to state 54
-    for                  go to state 55
-    call                 go to state 56
-    identifier           go to state 57
+    $default  reduce using rule 80 (mul_op)
 
 
 State 115
 
-   55 for: T_FOR assignop T_TO . expression T_DO statements
+   63 term: term mul_op . not_element
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
     T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
 
-    expression         go to state 139
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    not_element    go to state 140
+    element        go to state 75
+    call           go to state 76
+    not_op         go to state 77
+    identifier     go to state 78
+    standard_type  go to state 79
 
 
 State 116
 
-   49 write_int: T_WRITE_INT T_OBRACKET expression . T_CBRACKET
+   65 not_element: not_op element .
 
-    T_CBRACKET  shift, and go to state 140
+    $default  reduce using rule 65 (not_element)
 
 
 State 117
 
-   50 write_char: T_WRITE_CHAR T_OBRACKET expression . T_CBRACKET
+   56 while: T_WHILE expression T_DO . statements
 
-    T_CBRACKET  shift, and go to state 141
+    T_BEGIN       shift, and go to state 134
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
+    T_IDENTIFIER  shift, and go to state 4
+
+    statements           go to state 141
+    statement            go to state 136
+    matched_statement    go to state 45
+    unmatched_statement  go to state 46
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
 
 
 State 118
 
-   51 write_bool: T_WRITE_BOOL T_OBRACKET expression . T_CBRACKET
+   57 for: T_FOR assignop T_TO . expression T_DO statements
 
-    T_CBRACKET  shift, and go to state 142
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
+    T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
+
+    expression         go to state 142
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
 
 
 State 119
 
-   52 write_ln: T_WRITE_LN T_OBRACKET T_CBRACKET .
+   51 write_int: T_WRITE_INT T_OBRACKET expression . T_CBRACKET
 
-    $default  reduce using rule 52 (write_ln)
+    T_CBRACKET  shift, and go to state 143
 
 
 State 120
+
+   52 write_char: T_WRITE_CHAR T_OBRACKET expression . T_CBRACKET
+
+    T_CBRACKET  shift, and go to state 144
+
+
+State 121
+
+   53 write_bool: T_WRITE_BOOL T_OBRACKET expression . T_CBRACKET
+
+    T_CBRACKET  shift, and go to state 145
+
+
+State 122
+
+   54 write_ln: T_WRITE_LN T_OBRACKET T_CBRACKET .
+
+    $default  reduce using rule 54 (write_ln)
+
+
+State 123
 
    25 compound_statement: T_BEGIN optional_statements T_END T_DOT .
 
     $default  reduce using rule 25 (compound_statement)
 
 
-State 121
-
-   31 multi_statement: T_SEMICOLON statement . multi_statement
-
-    T_SEMICOLON  shift, and go to state 87
-
-    $default  reduce using rule 32 (multi_statement)
-
-    multi_statement  go to state 143
-
-
-State 122
-
-   53 assignop: identifier T_ASSIGNOP expression .
-
-    $default  reduce using rule 53 (assignop)
-
-
-State 123
-
-   73 call_arg: expression .
-
-    $default  reduce using rule 73 (call_arg)
-
-
 State 124
 
-   68 call: identifier T_OBRACKET call_arg_list . T_CBRACKET
+   31 multi_statement: statement multi_statement .
 
-    T_CBRACKET  shift, and go to state 144
+    $default  reduce using rule 31 (multi_statement)
 
 
 State 125
 
-   70 call_arg_list: call_arg . call_multi_arg
+   55 assignop: identifier T_ASSIGNOP expression .
 
-    T_COMMA  shift, and go to state 145
-
-    $default  reduce using rule 71 (call_multi_arg)
-
-    call_multi_arg  go to state 146
+    $default  reduce using rule 55 (assignop)
 
 
 State 126
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET T_SEMICOLON . declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   75 call_arg: expression .
+
+    $default  reduce using rule 75 (call_arg)
+
+
+State 127
+
+   70 call: identifier T_OBRACKET call_arg_list . T_CBRACKET
+
+    T_CBRACKET  shift, and go to state 146
+
+
+State 128
+
+   72 call_arg_list: call_arg . call_multi_arg
+
+    T_COMMA  shift, and go to state 147
+
+    $default  reduce using rule 73 (call_multi_arg)
+
+    call_multi_arg  go to state 148
+
+
+State 129
+
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON . declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_VAR  shift, and go to state 7
 
@@ -1621,353 +1688,354 @@ State 126
     T_BEGIN   [reduce using rule 6 (multi_var_decl)]
     $default  reduce using rule 4 (declarations)
 
-    declarations    go to state 147
+    declarations    go to state 149
     multi_var_decl  go to state 9
     var_decl        go to state 10
 
 
-State 127
+State 130
 
    22 multi_arg: T_COMMA arg . multi_arg
 
-    T_COMMA  shift, and go to state 92
+    T_COMMA  shift, and go to state 95
 
     $default  reduce using rule 23 (multi_arg)
 
-    multi_arg  go to state 148
+    multi_arg  go to state 150
 
 
-State 128
+State 131
 
    24 arg: identifier T_COLON T_STANDARD_TYPE .
 
     $default  reduce using rule 24 (arg)
 
 
-State 129
+State 132
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON . T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON . T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
-    T_STANDARD_TYPE  shift, and go to state 149
-
-
-State 130
-
-   67 element: T_OBRACKET expression T_CBRACKET .
-
-    $default  reduce using rule 67 (element)
+    T_STANDARD_TYPE  shift, and go to state 151
 
 
-State 131
+State 133
+
+   69 element: T_OBRACKET expression T_CBRACKET .
+
+    $default  reduce using rule 69 (element)
+
+
+State 134
 
    28 statements: T_BEGIN . optional_statements T_END
 
-    T_IF          shift, and go to state 35
-    T_WHILE       shift, and go to state 36
-    T_FOR         shift, and go to state 37
-    T_WRITE_INT   shift, and go to state 38
-    T_WRITE_CHAR  shift, and go to state 39
-    T_WRITE_BOOL  shift, and go to state 40
-    T_WRITE_LN    shift, and go to state 41
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
     T_IDENTIFIER  shift, and go to state 4
 
     $default  reduce using rule 30 (optional_statements)
 
-    optional_statements  go to state 150
-    statement            go to state 43
-    matched_statement    go to state 44
-    unmatched_statement  go to state 45
-    if                   go to state 46
-    matched_if           go to state 47
-    write_statement      go to state 48
-    write_int            go to state 49
-    write_char           go to state 50
-    write_bool           go to state 51
-    write_ln             go to state 52
-    assignop             go to state 53
-    while                go to state 54
-    for                  go to state 55
-    call                 go to state 56
-    identifier           go to state 57
+    optional_statements  go to state 152
+    statement            go to state 44
+    matched_statement    go to state 45
+    unmatched_statement  go to state 46
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
 
 
-State 132
+State 135
 
-   43 if: T_IF expression T_THEN statements .
+   45 if: T_IF expression T_THEN statements .
 
-    $default  reduce using rule 43 (if)
+    $default  reduce using rule 45 (if)
 
 
-State 133
+State 136
 
    27 statements: statement .
 
     $default  reduce using rule 27 (statements)
 
 
-State 134
-
-   33 statement: matched_statement .
-   42 unmatched_statement: T_IF expression T_THEN matched_statement . T_ELSE unmatched_statement
-   44 matched_if: T_IF expression T_THEN matched_statement . T_ELSE matched_statement
-
-    T_ELSE  shift, and go to state 151
-
-    T_ELSE    [reduce using rule 33 (statement)]
-    $default  reduce using rule 33 (statement)
-
-
-State 135
-
-   59 simple_expression: simple_expression add_op term .
-   61 term: term . mul_op not_element
-
-    T_AND  shift, and go to state 109
-    T_MUL  shift, and go to state 110
-    T_DIV  shift, and go to state 111
-
-    $default  reduce using rule 59 (simple_expression)
-
-    mul_op  go to state 112
-
-
-State 136
-
-   57 expression: simple_expression rel_op simple_expression .
-   59 simple_expression: simple_expression . add_op term
-
-    T_OR     shift, and go to state 98
-    T_PLUS   shift, and go to state 105
-    T_MINUS  shift, and go to state 106
-
-    $default  reduce using rule 57 (expression)
-
-    add_op  go to state 107
-
-
 State 137
 
-   61 term: term mul_op not_element .
+   33 statement: matched_statement . MB_SEMILICON
+   44 unmatched_statement: T_IF expression T_THEN matched_statement . T_ELSE unmatched_statement
+   46 matched_if: T_IF expression T_THEN matched_statement . T_ELSE matched_statement
 
-    $default  reduce using rule 61 (term)
+    T_ELSE       shift, and go to state 153
+    T_SEMICOLON  shift, and go to state 11
+
+    T_ELSE       [reduce using rule 36 (MB_SEMILICON)]
+    T_SEMICOLON  [reduce using rule 36 (MB_SEMILICON)]
+    $default     reduce using rule 36 (MB_SEMILICON)
+
+    MB_SEMILICON  go to state 90
 
 
 State 138
 
-   54 while: T_WHILE expression T_DO statements .
+   61 simple_expression: simple_expression add_op term .
+   63 term: term . mul_op not_element
 
-    $default  reduce using rule 54 (while)
+    T_AND  shift, and go to state 112
+    T_MUL  shift, and go to state 113
+    T_DIV  shift, and go to state 114
+
+    $default  reduce using rule 61 (simple_expression)
+
+    mul_op  go to state 115
 
 
 State 139
 
-   55 for: T_FOR assignop T_TO expression . T_DO statements
+   59 expression: simple_expression rel_op simple_expression .
+   61 simple_expression: simple_expression . add_op term
 
-    T_DO  shift, and go to state 152
+    T_OR     shift, and go to state 101
+    T_PLUS   shift, and go to state 108
+    T_MINUS  shift, and go to state 109
+
+    $default  reduce using rule 59 (expression)
+
+    add_op  go to state 110
 
 
 State 140
 
-   49 write_int: T_WRITE_INT T_OBRACKET expression T_CBRACKET .
+   63 term: term mul_op not_element .
 
-    $default  reduce using rule 49 (write_int)
+    $default  reduce using rule 63 (term)
 
 
 State 141
 
-   50 write_char: T_WRITE_CHAR T_OBRACKET expression T_CBRACKET .
+   56 while: T_WHILE expression T_DO statements .
 
-    $default  reduce using rule 50 (write_char)
+    $default  reduce using rule 56 (while)
 
 
 State 142
 
-   51 write_bool: T_WRITE_BOOL T_OBRACKET expression T_CBRACKET .
+   57 for: T_FOR assignop T_TO expression . T_DO statements
 
-    $default  reduce using rule 51 (write_bool)
+    T_DO  shift, and go to state 154
 
 
 State 143
 
-   31 multi_statement: T_SEMICOLON statement multi_statement .
+   51 write_int: T_WRITE_INT T_OBRACKET expression T_CBRACKET .
 
-    $default  reduce using rule 31 (multi_statement)
+    $default  reduce using rule 51 (write_int)
 
 
 State 144
 
-   68 call: identifier T_OBRACKET call_arg_list T_CBRACKET .
+   52 write_char: T_WRITE_CHAR T_OBRACKET expression T_CBRACKET .
 
-    $default  reduce using rule 68 (call)
+    $default  reduce using rule 52 (write_char)
 
 
 State 145
 
-   72 call_multi_arg: T_COMMA . call_arg call_multi_arg
+   53 write_bool: T_WRITE_BOOL T_OBRACKET expression T_CBRACKET .
 
-    T_NOT         shift, and go to state 65
-    T_OBRACKET    shift, and go to state 66
-    T_IDENTIFIER  shift, and go to state 4
-    T_INT         shift, and go to state 67
-    T_BOOL        shift, and go to state 68
-    T_CHAR        shift, and go to state 69
-
-    expression         go to state 123
-    simple_expression  go to state 71
-    term               go to state 72
-    not_element        go to state 73
-    element            go to state 74
-    call               go to state 75
-    call_arg           go to state 153
-    not_op             go to state 76
-    identifier         go to state 77
-    standard_type      go to state 78
+    $default  reduce using rule 53 (write_bool)
 
 
 State 146
 
-   70 call_arg_list: call_arg call_multi_arg .
+   70 call: identifier T_OBRACKET call_arg_list T_CBRACKET .
 
-    $default  reduce using rule 70 (call_arg_list)
+    $default  reduce using rule 70 (call)
 
 
 State 147
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET T_SEMICOLON declarations . T_BEGIN optional_statements T_END T_SEMICOLON
+   74 call_multi_arg: T_COMMA . call_arg call_multi_arg
 
-    T_BEGIN  shift, and go to state 154
+    T_NOT         shift, and go to state 66
+    T_OBRACKET    shift, and go to state 67
+    T_IDENTIFIER  shift, and go to state 4
+    T_INT         shift, and go to state 68
+    T_BOOL        shift, and go to state 69
+    T_CHAR        shift, and go to state 70
+
+    expression         go to state 126
+    simple_expression  go to state 72
+    term               go to state 73
+    not_element        go to state 74
+    element            go to state 75
+    call               go to state 76
+    call_arg           go to state 155
+    not_op             go to state 77
+    identifier         go to state 78
+    standard_type      go to state 79
 
 
 State 148
+
+   72 call_arg_list: call_arg call_multi_arg .
+
+    $default  reduce using rule 72 (call_arg_list)
+
+
+State 149
+
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations . T_BEGIN optional_statements T_END T_SEMICOLON
+
+    T_BEGIN  shift, and go to state 156
+
+
+State 150
 
    22 multi_arg: T_COMMA arg multi_arg .
 
     $default  reduce using rule 22 (multi_arg)
 
 
-State 149
-
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE . T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
-
-    T_SEMICOLON  shift, and go to state 155
-
-
-State 150
-
-   28 statements: T_BEGIN optional_statements . T_END
-
-    T_END  shift, and go to state 156
-
-
 State 151
 
-   42 unmatched_statement: T_IF expression T_THEN matched_statement T_ELSE . unmatched_statement
-   44 matched_if: T_IF expression T_THEN matched_statement T_ELSE . matched_statement
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE . MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
-    T_IF          shift, and go to state 35
-    T_WHILE       shift, and go to state 36
-    T_FOR         shift, and go to state 37
-    T_WRITE_INT   shift, and go to state 38
-    T_WRITE_CHAR  shift, and go to state 39
-    T_WRITE_BOOL  shift, and go to state 40
-    T_WRITE_LN    shift, and go to state 41
-    T_IDENTIFIER  shift, and go to state 4
+    T_SEMICOLON  shift, and go to state 11
 
-    matched_statement    go to state 157
-    unmatched_statement  go to state 158
-    if                   go to state 46
-    matched_if           go to state 47
-    write_statement      go to state 48
-    write_int            go to state 49
-    write_char           go to state 50
-    write_bool           go to state 51
-    write_ln             go to state 52
-    assignop             go to state 53
-    while                go to state 54
-    for                  go to state 55
-    call                 go to state 56
-    identifier           go to state 57
+    $default  reduce using rule 36 (MB_SEMILICON)
+
+    MB_SEMILICON  go to state 157
 
 
 State 152
 
-   55 for: T_FOR assignop T_TO expression T_DO . statements
+   28 statements: T_BEGIN optional_statements . T_END
 
-    T_BEGIN       shift, and go to state 131
-    T_IF          shift, and go to state 35
-    T_WHILE       shift, and go to state 36
-    T_FOR         shift, and go to state 37
-    T_WRITE_INT   shift, and go to state 38
-    T_WRITE_CHAR  shift, and go to state 39
-    T_WRITE_BOOL  shift, and go to state 40
-    T_WRITE_LN    shift, and go to state 41
-    T_IDENTIFIER  shift, and go to state 4
-
-    statements           go to state 159
-    statement            go to state 133
-    matched_statement    go to state 44
-    unmatched_statement  go to state 45
-    if                   go to state 46
-    matched_if           go to state 47
-    write_statement      go to state 48
-    write_int            go to state 49
-    write_char           go to state 50
-    write_bool           go to state 51
-    write_ln             go to state 52
-    assignop             go to state 53
-    while                go to state 54
-    for                  go to state 55
-    call                 go to state 56
-    identifier           go to state 57
+    T_END  shift, and go to state 158
 
 
 State 153
 
-   72 call_multi_arg: T_COMMA call_arg . call_multi_arg
+   44 unmatched_statement: T_IF expression T_THEN matched_statement T_ELSE . unmatched_statement
+   46 matched_if: T_IF expression T_THEN matched_statement T_ELSE . matched_statement
 
-    T_COMMA  shift, and go to state 145
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
+    T_IDENTIFIER  shift, and go to state 4
 
-    $default  reduce using rule 71 (call_multi_arg)
-
-    call_multi_arg  go to state 160
+    matched_statement    go to state 159
+    unmatched_statement  go to state 160
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
 
 
 State 154
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET T_SEMICOLON declarations T_BEGIN . optional_statements T_END T_SEMICOLON
+   57 for: T_FOR assignop T_TO expression T_DO . statements
 
-    T_IF          shift, and go to state 35
-    T_WHILE       shift, and go to state 36
-    T_FOR         shift, and go to state 37
-    T_WRITE_INT   shift, and go to state 38
-    T_WRITE_CHAR  shift, and go to state 39
-    T_WRITE_BOOL  shift, and go to state 40
-    T_WRITE_LN    shift, and go to state 41
+    T_BEGIN       shift, and go to state 134
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
     T_IDENTIFIER  shift, and go to state 4
 
-    $default  reduce using rule 30 (optional_statements)
-
-    optional_statements  go to state 161
-    statement            go to state 43
-    matched_statement    go to state 44
-    unmatched_statement  go to state 45
-    if                   go to state 46
-    matched_if           go to state 47
-    write_statement      go to state 48
-    write_int            go to state 49
-    write_char           go to state 50
-    write_bool           go to state 51
-    write_ln             go to state 52
-    assignop             go to state 53
-    while                go to state 54
-    for                  go to state 55
-    call                 go to state 56
-    identifier           go to state 57
+    statements           go to state 161
+    statement            go to state 136
+    matched_statement    go to state 45
+    unmatched_statement  go to state 46
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
 
 
 State 155
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON . declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   74 call_multi_arg: T_COMMA call_arg . call_multi_arg
+
+    T_COMMA  shift, and go to state 147
+
+    $default  reduce using rule 73 (call_multi_arg)
+
+    call_multi_arg  go to state 162
+
+
+State 156
+
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN . optional_statements T_END T_SEMICOLON
+
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
+    T_IDENTIFIER  shift, and go to state 4
+
+    $default  reduce using rule 30 (optional_statements)
+
+    optional_statements  go to state 163
+    statement            go to state 44
+    matched_statement    go to state 45
+    unmatched_statement  go to state 46
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
+
+
+State 157
+
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON . declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_VAR  shift, and go to state 7
 
@@ -1975,123 +2043,123 @@ State 155
     T_BEGIN   [reduce using rule 6 (multi_var_decl)]
     $default  reduce using rule 4 (declarations)
 
-    declarations    go to state 162
+    declarations    go to state 164
     multi_var_decl  go to state 9
     var_decl        go to state 10
 
 
-State 156
+State 158
 
    28 statements: T_BEGIN optional_statements T_END .
 
     $default  reduce using rule 28 (statements)
 
 
-State 157
-
-   44 matched_if: T_IF expression T_THEN matched_statement T_ELSE matched_statement .
-
-    $default  reduce using rule 44 (matched_if)
-
-
-State 158
-
-   42 unmatched_statement: T_IF expression T_THEN matched_statement T_ELSE unmatched_statement .
-
-    $default  reduce using rule 42 (unmatched_statement)
-
-
 State 159
 
-   55 for: T_FOR assignop T_TO expression T_DO statements .
+   46 matched_if: T_IF expression T_THEN matched_statement T_ELSE matched_statement .
 
-    $default  reduce using rule 55 (for)
+    $default  reduce using rule 46 (matched_if)
 
 
 State 160
 
-   72 call_multi_arg: T_COMMA call_arg call_multi_arg .
+   44 unmatched_statement: T_IF expression T_THEN matched_statement T_ELSE unmatched_statement .
 
-    $default  reduce using rule 72 (call_multi_arg)
+    $default  reduce using rule 44 (unmatched_statement)
 
 
 State 161
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET T_SEMICOLON declarations T_BEGIN optional_statements . T_END T_SEMICOLON
+   57 for: T_FOR assignop T_TO expression T_DO statements .
 
-    T_END  shift, and go to state 163
+    $default  reduce using rule 57 (for)
 
 
 State 162
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations . T_BEGIN optional_statements T_END T_SEMICOLON
+   74 call_multi_arg: T_COMMA call_arg call_multi_arg .
 
-    T_BEGIN  shift, and go to state 164
+    $default  reduce using rule 74 (call_multi_arg)
 
 
 State 163
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET T_SEMICOLON declarations T_BEGIN optional_statements T_END . T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements . T_END T_SEMICOLON
 
-    T_SEMICOLON  shift, and go to state 165
+    T_END  shift, and go to state 165
 
 
 State 164
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN . optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations . T_BEGIN optional_statements T_END T_SEMICOLON
 
-    T_IF          shift, and go to state 35
-    T_WHILE       shift, and go to state 36
-    T_FOR         shift, and go to state 37
-    T_WRITE_INT   shift, and go to state 38
-    T_WRITE_CHAR  shift, and go to state 39
-    T_WRITE_BOOL  shift, and go to state 40
-    T_WRITE_LN    shift, and go to state 41
-    T_IDENTIFIER  shift, and go to state 4
-
-    $default  reduce using rule 30 (optional_statements)
-
-    optional_statements  go to state 166
-    statement            go to state 43
-    matched_statement    go to state 44
-    unmatched_statement  go to state 45
-    if                   go to state 46
-    matched_if           go to state 47
-    write_statement      go to state 48
-    write_int            go to state 49
-    write_char           go to state 50
-    write_bool           go to state 51
-    write_ln             go to state 52
-    assignop             go to state 53
-    while                go to state 54
-    for                  go to state 55
-    call                 go to state 56
-    identifier           go to state 57
+    T_BEGIN  shift, and go to state 166
 
 
 State 165
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON .
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END . T_SEMICOLON
 
-    $default  reduce using rule 18 (procedure_decl)
+    T_SEMICOLON  shift, and go to state 167
 
 
 State 166
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements . T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN . optional_statements T_END T_SEMICOLON
 
-    T_END  shift, and go to state 167
+    T_IF          shift, and go to state 36
+    T_WHILE       shift, and go to state 37
+    T_FOR         shift, and go to state 38
+    T_WRITE_INT   shift, and go to state 39
+    T_WRITE_CHAR  shift, and go to state 40
+    T_WRITE_BOOL  shift, and go to state 41
+    T_WRITE_LN    shift, and go to state 42
+    T_IDENTIFIER  shift, and go to state 4
+
+    $default  reduce using rule 30 (optional_statements)
+
+    optional_statements  go to state 168
+    statement            go to state 44
+    matched_statement    go to state 45
+    unmatched_statement  go to state 46
+    if                   go to state 47
+    matched_if           go to state 48
+    write_statement      go to state 49
+    write_int            go to state 50
+    write_char           go to state 51
+    write_bool           go to state 52
+    write_ln             go to state 53
+    assignop             go to state 54
+    while                go to state 55
+    for                  go to state 56
+    call                 go to state 57
+    identifier           go to state 58
 
 
 State 167
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements T_END . T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON .
 
-    T_SEMICOLON  shift, and go to state 168
+    $default  reduce using rule 18 (procedure_decl)
 
 
 State 168
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON .
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements . T_END T_SEMICOLON
+
+    T_END  shift, and go to state 169
+
+
+State 169
+
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 170
+
+
+State 170
+
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON .
 
     $default  reduce using rule 19 (function_decl)

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+./mt ../test/true/1.pas
+./mt ../test/true/2.pas
+./mt ../test/true/3.pas
+./mt ../test/true/4.pas
+./mt ../test/true/5.pas
+./mt ../test/true/6.pas

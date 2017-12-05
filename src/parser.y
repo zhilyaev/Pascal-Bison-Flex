@@ -6,7 +6,7 @@
 #include "Structures.h"
 #include "parser.h"
 #include "Code_Gen.h"
-
+// Входной Поток = Файл
 extern FILE *yyin;
 
 static void yyerror (const char *msg);
@@ -65,7 +65,7 @@ This union define the basic variables that we're gonna represent such as opvars 
 %type <node> assignop identifier standard_type
 %type <node> add_op mul_op rel_op not_op
 
-//This expression indicates to Bison where to start the translation
+//Указываем Аксиому ЯВНО
 %start program
 
 %%
@@ -84,7 +84,7 @@ program:
     ;
 
 program_decl:
-    T_PROGRAM identifier T_SEMICOLON
+    T_PROGRAM identifier MB_SEMILICON
     {
         Node *temp;
         temp = New_Node("program_decl", PROGRAM_DECL, VOID, yylloc.last_line, NULL);
@@ -175,7 +175,7 @@ subprogram_decl:
     ;
 
 procedure_decl:
-    T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET T_SEMICOLON declarations
+    T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations
     T_BEGIN optional_statements T_END T_SEMICOLON
     {
         Node *temp;
@@ -192,7 +192,7 @@ procedure_decl:
 
 function_decl:
     T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE
-    T_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+    MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
     {
         Node *temp;
         temp = New_Node("function_decl", FUNCTION_DECL, $7, yylloc.last_line, NULL);
@@ -260,18 +260,26 @@ optional_statements:
     | /* E */ { $$ = NULL; }
     ;
 
+
 multi_statement:
-    T_SEMICOLON statement multi_statement
+    statement multi_statement
     {
-        Add_Sibling($2, $3);
-        $$ = $2;
+        Add_Sibling($1, $2);
+        $$ = $1;
     }
     | /* E */ { $$ = NULL; }
     ;
 
+
 statement:
-    matched_statement { $$ = $1; }
-    | unmatched_statement { $$ = $1; }
+    matched_statement MB_SEMILICON { $$ = $1; }
+    | unmatched_statement MB_SEMILICON { $$ = $1; }
+    ;
+
+/* Может быть запятая, а может и нет. */
+MB_SEMILICON:
+    T_SEMICOLON
+    |
     ;
 
 matched_statement:
@@ -624,7 +632,7 @@ standard_type:
 
 static void yyerror (const char *msg)
 {
-    fprintf(stderr, "Error in line number %d: %s\n", yyget_lineno(), msg);
+    fprintf(stderr, "ERROR IN %d: %s\n", yyget_lineno(), msg);
 }
 
 int main (int argc, char **argv)
@@ -638,7 +646,7 @@ int main (int argc, char **argv)
 
 		if (yyin==NULL)
 		{
-			printf("The file doesn't exit.\n");
+			printf("404.\n");
 			exit(1);
 			return 0;
 		}
@@ -646,19 +654,11 @@ int main (int argc, char **argv)
     else
         yyin = stdin;
 
-    yyparse();
-
-    if (Check_Errors(global_node))
-    {
-        fprintf(stderr, "Too many errors to compile.\n");
-        exit(1);
-		return 0;
+    if(yyparse()==0){
+        printf("SUCCESS.\n");
+    }else {
+        printf("WTF.\n");
     }
-
-    action = Code_Gen_New();
-
-    if (action != NULL)
-        Accept_Node(global_node, action);
 
     return 0;
 }

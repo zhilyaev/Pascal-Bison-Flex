@@ -6,7 +6,7 @@ CC=gcc
 CFLAGS=-O3 -w
 LIBS=
 PARSER=parser
-exe=../build/
+exe=
 SCANNER=scanner
 OBJS=$(SCANNER).o $(PARSER).o Structures.o Code_Gen.o
 MYPASCALCOMPEXEC=mt
@@ -27,7 +27,7 @@ $(SCANNER).o: $(SCANNER).c $(PARSER).h
 	$(CC) $(CFLAGS) $(SCANNER).c -c
 
 $(SCANNER).c: $(SCANNER).l
-	$(FLEX) $(FLEXFLAGS) -o$(SCANNER).c $(SCANNER).l
+	$(FLEX) $(FLEXFLAGS) -o $(SCANNER).c $(SCANNER).l
 
 $(PARSER).h: $(PARSER).y
 	$(BISON) $(BISONFLAGS) $(PARSER).y -o $(PARSER).c
