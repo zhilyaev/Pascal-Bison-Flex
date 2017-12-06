@@ -540,7 +540,7 @@ static const char *const yytname[] =
   "multi_subprogram_decl", "subprogram_decl", "procedure_decl",
   "function_decl", "arg_list", "multi_arg", "arg", "compound_statement",
   "statements", "optional_statements", "multi_statement", "statement",
-  "MB_SEMILICON", "matched_statement", "unmatched_statement", "if",
+  "MB_SEMICOLON", "matched_statement", "unmatched_statement", "if",
   "matched_if", "write_statement", "write_int", "write_char", "write_bool",
   "write_ln", "assignop", "while", "for", "expression",
   "simple_expression", "term", "not_element", "element", "call",
@@ -643,7 +643,7 @@ static const yytype_int16 yydefgoto[] =
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
-     number is the opposite.  If YYTABLE_NINF, syntax error.  */
+     number is the opposite.  If YYTABLE_NINF, Синтаксическая ошибка.  */
 static const yytype_uint8 yytable[] =
 {
        5,    12,    57,    89,    71,    80,    15,   141,   137,   152,
@@ -765,7 +765,7 @@ do                                                              \
     }                                                           \
   else                                                          \
     {                                                           \
-      yyerror (YY_("syntax error: cannot back up")); \
+      yyerror (YY_("Синтаксическая ошибка: cannot back up")); \
       YYERROR;                                                  \
     }                                                           \
 while (0)
@@ -1078,7 +1078,7 @@ yytnamerr (char *yyres, const char *yystr)
 # endif
 
 /* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
-   about the unexpected token YYTOKEN for the state stack whose top is
+   about the Нежданчик: token YYTOKEN for the state stack whose top is
    YYSSP.
 
    Return 0 if *YYMSG was successfully written.  Return 1 if *YYMSG is
@@ -1096,7 +1096,7 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
   const char *yyformat = YY_NULLPTR;
   /* Arguments of yyformat. */
   char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
-  /* Number of reported tokens (one for the "unexpected", one per
+  /* Number of reported tokens (one for the "Нежданчик:", one per
      "expected"). */
   int yycount = 0;
 
@@ -1108,8 +1108,8 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
      - The only way there can be no lookahead present (in yychar) is if
        this state is a consistent state with a default action.  Thus,
        detecting the absence of a lookahead is sufficient to determine
-       that there is no unexpected or expected token to report.  In that
-       case, just report a simple "syntax error".
+       that there is no Нежданчик: or expected token to report.  In that
+       case, just report a simple "Синтаксическая ошибка".
      - Don't assume there isn't a lookahead just because this state is a
        consistent state with a default action.  There might have been a
        previous inconsistent state, consistent state with a non-default
@@ -1117,7 +1117,7 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
      - Of course, the expected token list depends on states to have
        correct lookahead information, and it depends on the parser not
        to perform extra reductions after fetching a lookahead from the
-       scanner and before detecting a syntax error.  Thus, state merging
+       scanner and before detecting a Синтаксическая ошибка.  Thus, state merging
        (from LALR or IELR) and default reductions corrupt the expected
        token list.  However, the list is correct for canonical LR with
        one exception: it will still contain any token that will not be
@@ -1166,12 +1166,12 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
       case N:                               \
         yyformat = S;                       \
       break
-      YYCASE_(0, YY_("syntax error"));
-      YYCASE_(1, YY_("syntax error, unexpected %s"));
-      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
-      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
-      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
-      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
+      YYCASE_(0, YY_("Синтаксическая ошибка"));
+      YYCASE_(1, YY_("Синтаксическая ошибка, Нежданчик: %s"));
+      YYCASE_(2, YY_("Синтаксическая ошибка, Нежданчик: %s, Я ждал увидеть: %s"));
+      YYCASE_(3, YY_("Синтаксическая ошибка, Нежданчик: %s, Я ждал увидеть: %s ИЛИ %s"));
+      YYCASE_(4, YY_("Синтаксическая ошибка, Нежданчик: %s, Я ждал увидеть: %s ИЛИ %s ИЛИ %s"));
+      YYCASE_(5, YY_("Синтаксическая ошибка, Нежданчик: %s, Я ждал увидеть: %s ИЛИ %s ИЛИ %s ИЛИ %s"));
 # undef YYCASE_
     }
 
@@ -1259,7 +1259,7 @@ static YYLTYPE yyloc_default
 ;
 YYLTYPE yylloc = yyloc_default;
 
-    /* Number of syntax errors so far.  */
+    /* Number of Синтаксическая ошибкаs so far.  */
     int yynerrs;
 
     int yystate;
@@ -2329,7 +2329,7 @@ yyreduce:
      if it invokes YYBACKUP.  In the case of YYABORT or YYACCEPT, an
      incorrect destructor might then be invoked immediately.  In the
      case of YYERROR or YYBACKUP, subsequent parser actions might lead
-     to an incorrect destructor call or verbose syntax error message
+     to an incorrect destructor call or verbose Синтаксическая ошибка message
      before the lookahead is translated.  */
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
 
@@ -2368,12 +2368,12 @@ yyerrlab:
     {
       ++yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (YY_("syntax error"));
+      yyerror (YY_("Синтаксическая ошибка"));
 #else
 # define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
                                         yyssp, yytoken)
       {
-        char const *yymsgp = YY_("syntax error");
+        char const *yymsgp = YY_("Синтаксическая ошибка");
         int yysyntax_error_status;
         yysyntax_error_status = YYSYNTAX_ERROR;
         if (yysyntax_error_status == 0)
@@ -2451,7 +2451,7 @@ yyerrorlab:
 
 
 /*-------------------------------------------------------------.
-| yyerrlab1 -- common code for both syntax error and YYERROR.  |
+| yyerrlab1 -- common code for both Синтаксическая ошибка and YYERROR.  |
 `-------------------------------------------------------------*/
 yyerrlab1:
   yyerrstatus = 3;      /* Each real token shifted decrements this.  */
@@ -2554,14 +2554,15 @@ yyreturn:
 }
 #line 631 "parser.y" /* yacc.c:1906  */
 
-
 static void yyerror (const char *msg)
 {
-    fprintf(stderr, "ERROR IN %d: %s\n", yyget_lineno(), msg);
+    fprintf(stderr, "Ошибка в строке № %d: %s\n", yyget_lineno(), msg);
 }
 
 int main (int argc, char **argv)
 {
+    setlocale(6, "Russia");
+
     Action *action;
 	fptr = fopen("result.ill", "wb");
 
@@ -2571,19 +2572,25 @@ int main (int argc, char **argv)
 
 		if (yyin==NULL)
 		{
-			printf("404.\n");
+			printf("404 - Файл не найден\n");
 			exit(1);
-			return 0;
+			return 1;
 		}
 	}
     else
         yyin = stdin;
 
-    if(yyparse()==0){
-        printf("SUCCESS.\n");
+    yyparse();
+
+    if (Check_Errors(global_node))
+    {
+        fprintf(stderr, "Слишком много ошибок\n");
+        exit(1);
+		return 1;
     }else {
-        printf("WTF.\n");
+        printf("Успешно\n");
+        return 0;
     }
 
-    return 0;
+    
 }

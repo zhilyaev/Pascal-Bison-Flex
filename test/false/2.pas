@@ -50,7 +50,7 @@ begin
     bar := true;
     i := 17;
 
-    if ((1 = 1) or (2 = 3)) and (bar = false) then
+    if ((1 = 1) or (2 = 3)) and (bar = false then
     begin
         printchar('t');
         if bar then

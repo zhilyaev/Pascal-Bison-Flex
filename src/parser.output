@@ -18,7 +18,7 @@ Grammar
 
     1 program: program_decl declarations subprogram_declarations compound_statement
 
-    2 program_decl: T_PROGRAM identifier MB_SEMILICON
+    2 program_decl: T_PROGRAM identifier MB_SEMICOLON
 
     3 declarations: multi_var_decl
     4             | %empty
@@ -44,9 +44,9 @@ Grammar
    16 subprogram_decl: procedure_decl
    17                | function_decl
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
    20 arg_list: arg multi_arg
    21         | %empty
@@ -68,10 +68,10 @@ Grammar
    31 multi_statement: statement multi_statement
    32                | %empty
 
-   33 statement: matched_statement MB_SEMILICON
-   34          | unmatched_statement MB_SEMILICON
+   33 statement: matched_statement MB_SEMICOLON
+   34          | unmatched_statement MB_SEMICOLON
 
-   35 MB_SEMILICON: T_SEMICOLON
+   35 MB_SEMICOLON: T_SEMICOLON
    36             | %empty
 
    37 matched_statement: assignop
@@ -254,7 +254,7 @@ multi_statement (67)
     on left: 31 32, on right: 29 31
 statement (68)
     on left: 33 34, on right: 27 29 31
-MB_SEMILICON (69)
+MB_SEMICOLON (69)
     on left: 35 36, on right: 2 18 19 33 34
 matched_statement (70)
     on left: 37 38 39 40 41 42, on right: 33 44 46
@@ -324,7 +324,7 @@ State 0
 
 State 1
 
-    2 program_decl: T_PROGRAM . identifier MB_SEMILICON
+    2 program_decl: T_PROGRAM . identifier MB_SEMICOLON
 
     T_IDENTIFIER  shift, and go to state 4
 
@@ -368,13 +368,13 @@ State 4
 
 State 5
 
-    2 program_decl: T_PROGRAM identifier . MB_SEMILICON
+    2 program_decl: T_PROGRAM identifier . MB_SEMICOLON
 
     T_SEMICOLON  shift, and go to state 11
 
-    $default  reduce using rule 36 (MB_SEMILICON)
+    $default  reduce using rule 36 (MB_SEMICOLON)
 
-    MB_SEMILICON  go to state 12
+    MB_SEMICOLON  go to state 12
 
 
 State 6
@@ -431,14 +431,14 @@ State 10
 
 State 11
 
-   35 MB_SEMILICON: T_SEMICOLON .
+   35 MB_SEMICOLON: T_SEMICOLON .
 
-    $default  reduce using rule 35 (MB_SEMILICON)
+    $default  reduce using rule 35 (MB_SEMICOLON)
 
 
 State 12
 
-    2 program_decl: T_PROGRAM identifier MB_SEMILICON .
+    2 program_decl: T_PROGRAM identifier MB_SEMICOLON .
 
     $default  reduce using rule 2 (program_decl)
 
@@ -470,7 +470,7 @@ State 15
 
 State 16
 
-   18 procedure_decl: T_PROCEDURE . identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE . identifier T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_IDENTIFIER  shift, and go to state 4
 
@@ -479,7 +479,7 @@ State 16
 
 State 17
 
-   19 function_decl: T_FUNCTION . identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION . identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_IDENTIFIER  shift, and go to state 4
 
@@ -559,14 +559,14 @@ State 25
 
 State 26
 
-   18 procedure_decl: T_PROCEDURE identifier . T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier . T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_OBRACKET  shift, and go to state 34
 
 
 State 27
 
-   19 function_decl: T_FUNCTION identifier . T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier . T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_OBRACKET  shift, and go to state 35
 
@@ -653,7 +653,7 @@ State 33
 
 State 34
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET . arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET . arg_list T_CBRACKET MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_IDENTIFIER  shift, and go to state 4
 
@@ -666,7 +666,7 @@ State 34
 
 State 35
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET . arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET . arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_IDENTIFIER  shift, and go to state 4
 
@@ -803,26 +803,26 @@ State 44
 
 State 45
 
-   33 statement: matched_statement . MB_SEMILICON
+   33 statement: matched_statement . MB_SEMICOLON
 
     T_SEMICOLON  shift, and go to state 11
 
-    T_SEMICOLON  [reduce using rule 36 (MB_SEMILICON)]
-    $default     reduce using rule 36 (MB_SEMILICON)
+    T_SEMICOLON  [reduce using rule 36 (MB_SEMICOLON)]
+    $default     reduce using rule 36 (MB_SEMICOLON)
 
-    MB_SEMILICON  go to state 90
+    MB_SEMICOLON  go to state 90
 
 
 State 46
 
-   34 statement: unmatched_statement . MB_SEMILICON
+   34 statement: unmatched_statement . MB_SEMICOLON
 
     T_SEMICOLON  shift, and go to state 11
 
-    T_SEMICOLON  [reduce using rule 36 (MB_SEMILICON)]
-    $default     reduce using rule 36 (MB_SEMILICON)
+    T_SEMICOLON  [reduce using rule 36 (MB_SEMICOLON)]
+    $default     reduce using rule 36 (MB_SEMICOLON)
 
-    MB_SEMILICON  go to state 91
+    MB_SEMICOLON  go to state 91
 
 
 State 47
@@ -934,7 +934,7 @@ State 61
 
 State 62
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list . T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list . T_CBRACKET MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_CBRACKET  shift, and go to state 94
 
@@ -959,7 +959,7 @@ State 64
 
 State 65
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list . T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list . T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_CBRACKET  shift, and go to state 98
 
@@ -1256,14 +1256,14 @@ State 89
 
 State 90
 
-   33 statement: matched_statement MB_SEMILICON .
+   33 statement: matched_statement MB_SEMICOLON .
 
     $default  reduce using rule 33 (statement)
 
 
 State 91
 
-   34 statement: unmatched_statement MB_SEMILICON .
+   34 statement: unmatched_statement MB_SEMICOLON .
 
     $default  reduce using rule 34 (statement)
 
@@ -1318,13 +1318,13 @@ State 93
 
 State 94
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET . MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET . MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_SEMICOLON  shift, and go to state 11
 
-    $default  reduce using rule 36 (MB_SEMILICON)
+    $default  reduce using rule 36 (MB_SEMICOLON)
 
-    MB_SEMILICON  go to state 129
+    MB_SEMICOLON  go to state 129
 
 
 State 95
@@ -1353,7 +1353,7 @@ State 97
 
 State 98
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET . T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET . T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_COLON  shift, and go to state 132
 
@@ -1680,7 +1680,7 @@ State 128
 
 State 129
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON . declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON . declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_VAR  shift, and go to state 7
 
@@ -1713,7 +1713,7 @@ State 131
 
 State 132
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON . T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON . T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_STANDARD_TYPE  shift, and go to state 151
 
@@ -1774,18 +1774,18 @@ State 136
 
 State 137
 
-   33 statement: matched_statement . MB_SEMILICON
+   33 statement: matched_statement . MB_SEMICOLON
    44 unmatched_statement: T_IF expression T_THEN matched_statement . T_ELSE unmatched_statement
    46 matched_if: T_IF expression T_THEN matched_statement . T_ELSE matched_statement
 
     T_ELSE       shift, and go to state 153
     T_SEMICOLON  shift, and go to state 11
 
-    T_ELSE       [reduce using rule 36 (MB_SEMILICON)]
-    T_SEMICOLON  [reduce using rule 36 (MB_SEMILICON)]
-    $default     reduce using rule 36 (MB_SEMILICON)
+    T_ELSE       [reduce using rule 36 (MB_SEMICOLON)]
+    T_SEMICOLON  [reduce using rule 36 (MB_SEMICOLON)]
+    $default     reduce using rule 36 (MB_SEMICOLON)
 
-    MB_SEMILICON  go to state 90
+    MB_SEMICOLON  go to state 90
 
 
 State 138
@@ -1897,7 +1897,7 @@ State 148
 
 State 149
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations . T_BEGIN optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON declarations . T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_BEGIN  shift, and go to state 156
 
@@ -1911,13 +1911,13 @@ State 150
 
 State 151
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE . MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE . MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_SEMICOLON  shift, and go to state 11
 
-    $default  reduce using rule 36 (MB_SEMILICON)
+    $default  reduce using rule 36 (MB_SEMICOLON)
 
-    MB_SEMILICON  go to state 157
+    MB_SEMICOLON  go to state 157
 
 
 State 152
@@ -2002,7 +2002,7 @@ State 155
 
 State 156
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN . optional_statements T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON declarations T_BEGIN . optional_statements T_END T_SEMICOLON
 
     T_IF          shift, and go to state 36
     T_WHILE       shift, and go to state 37
@@ -2035,7 +2035,7 @@ State 156
 
 State 157
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON . declarations T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON . declarations T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_VAR  shift, and go to state 7
 
@@ -2085,28 +2085,28 @@ State 162
 
 State 163
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements . T_END T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON declarations T_BEGIN optional_statements . T_END T_SEMICOLON
 
     T_END  shift, and go to state 165
 
 
 State 164
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations . T_BEGIN optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations . T_BEGIN optional_statements T_END T_SEMICOLON
 
     T_BEGIN  shift, and go to state 166
 
 
 State 165
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END . T_SEMICOLON
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON declarations T_BEGIN optional_statements T_END . T_SEMICOLON
 
     T_SEMICOLON  shift, and go to state 167
 
 
 State 166
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN . optional_statements T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN . optional_statements T_END T_SEMICOLON
 
     T_IF          shift, and go to state 36
     T_WHILE       shift, and go to state 37
@@ -2139,27 +2139,27 @@ State 166
 
 State 167
 
-   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON .
+   18 procedure_decl: T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON .
 
     $default  reduce using rule 18 (procedure_decl)
 
 
 State 168
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements . T_END T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements . T_END T_SEMICOLON
 
     T_END  shift, and go to state 169
 
 
 State 169
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END . T_SEMICOLON
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements T_END . T_SEMICOLON
 
     T_SEMICOLON  shift, and go to state 170
 
 
 State 170
 
-   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON .
+   19 function_decl: T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON .
 
     $default  reduce using rule 19 (function_decl)

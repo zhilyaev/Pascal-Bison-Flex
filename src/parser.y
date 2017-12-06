@@ -84,7 +84,7 @@ program:
     ;
 
 program_decl:
-    T_PROGRAM identifier MB_SEMILICON
+    T_PROGRAM identifier MB_SEMICOLON
     {
         Node *temp;
         temp = New_Node("program_decl", PROGRAM_DECL, VOID, yylloc.last_line, NULL);
@@ -175,7 +175,7 @@ subprogram_decl:
     ;
 
 procedure_decl:
-    T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMILICON declarations
+    T_PROCEDURE identifier T_OBRACKET arg_list T_CBRACKET MB_SEMICOLON declarations
     T_BEGIN optional_statements T_END T_SEMICOLON
     {
         Node *temp;
@@ -192,7 +192,7 @@ procedure_decl:
 
 function_decl:
     T_FUNCTION identifier T_OBRACKET arg_list T_CBRACKET T_COLON T_STANDARD_TYPE
-    MB_SEMILICON declarations T_BEGIN optional_statements T_END T_SEMICOLON
+    MB_SEMICOLON declarations T_BEGIN optional_statements T_END T_SEMICOLON
     {
         Node *temp;
         temp = New_Node("function_decl", FUNCTION_DECL, $7, yylloc.last_line, NULL);
@@ -272,12 +272,12 @@ multi_statement:
 
 
 statement:
-    matched_statement MB_SEMILICON { $$ = $1; }
-    | unmatched_statement MB_SEMILICON { $$ = $1; }
+    matched_statement MB_SEMICOLON { $$ = $1; }
+    | unmatched_statement MB_SEMICOLON { $$ = $1; }
     ;
 
 /* Может быть запятая, а может и нет. */
-MB_SEMILICON:
+MB_SEMICOLON:
     T_SEMICOLON
     |
     ;
@@ -629,14 +629,15 @@ standard_type:
     ;
 
 %%
-
 static void yyerror (const char *msg)
 {
-    fprintf(stderr, "ERROR IN %d: %s\n", yyget_lineno(), msg);
+    fprintf(stderr, "Ошибка в строке № %d: %s\n", yyget_lineno(), msg);
 }
 
 int main (int argc, char **argv)
 {
+    setlocale(6, "Russia");
+
     Action *action;
 	fptr = fopen("result.ill", "wb");
 
@@ -646,19 +647,25 @@ int main (int argc, char **argv)
 
 		if (yyin==NULL)
 		{
-			printf("404.\n");
+			printf("404 - Файл не найден\n");
 			exit(1);
-			return 0;
+			return 1;
 		}
 	}
     else
         yyin = stdin;
 
-    if(yyparse()==0){
-        printf("SUCCESS.\n");
+    yyparse();
+
+    if (Check_Errors(global_node))
+    {
+        fprintf(stderr, "Слишком много ошибок\n");
+        exit(1);
+		return 1;
     }else {
-        printf("WTF.\n");
+        printf("Успешно\n");
+        return 0;
     }
 
-    return 0;
+    
 }

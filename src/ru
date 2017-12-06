@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sed -i 's/syntax error/Синтаксическая ошибка/g' parser.c
+sed -i 's/unexpected/Нежданчик:/g' parser.c
+sed -i 's/expecting/Я ждал увидеть:/g' parser.c
+sed -i 's/or %s/ИЛИ %s/g' parser.c

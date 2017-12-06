@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo "Тест 1.pas"
+./mt ../test/false/1.pas
+echo "Тест 2.pas"
+./mt ../test/false/2.pas
+echo "Тест 3.pas"
+./mt ../test/false/3.pas
